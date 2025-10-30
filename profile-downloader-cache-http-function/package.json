@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "node ./node_modules/@google-cloud/functions-framework/build/src/main.js --target=profile-downloader-cache-http-function --signature-type=http",
+    "build": "node ./node_modules/typescript/bin/tsc"
+  },
+  "main": "dist/index.js",
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^4.0.0"
+  }
+}
