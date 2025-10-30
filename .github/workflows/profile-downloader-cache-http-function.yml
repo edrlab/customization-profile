@@ -50,7 +50,7 @@ jobs:
     - name: 'gcloud deploy'
       run: |-
           gcloud run deploy profile-downloader-cache-http-function \
-            --source . \
+            --source profile-downloader-cache-http-function/. \
             --function profile-downloader-cache-http-function \
             --base-image nodejs22 \
             --region europe-west1
