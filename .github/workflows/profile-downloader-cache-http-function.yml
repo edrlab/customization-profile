@@ -53,7 +53,8 @@ jobs:
             --source profile-downloader-cache-http-function/. \
             --function profile-downloader-cache-http-function \
             --base-image nodejs22 \
-            --region europe-west1
+            --region europe-west1 \
+            --service-account github-actions-service-account@customization-profile.iam.gserviceaccount.com
     # https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=customization-profile
     # - name: 'glcoud deploy'
     #   uses: 'google-github-actions/deploy-cloud-functions@v4'
