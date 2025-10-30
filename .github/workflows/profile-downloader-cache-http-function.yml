@@ -47,17 +47,18 @@ jobs:
         version: '>= 363.0.0'
     - name: 'Use gcloud CLI'
       run: 'gcloud info'
-    # - name: 'gcloud deploy'
-    #   run: |-
-    #       gcloud run deploy profile-downloader-cache-http-function \
-    #         --source profile-downloader-cache-http-function/. \
-    #         --function profile-downloader-cache-http-function \
-    #         --base-image nodejs22 \
-    #         --region europe-west1
-    - name: 'glcoud deploy'
-      uses: 'google-github-actions/deploy-cloud-functions@v4'
-      timeout-minutes: 10
-      with:
-        name: 'profile-downloader-cache-http-functionn'
-        runtime: 'nodejs22'
-        region: 'europe-west1'
+    - name: 'gcloud deploy'
+      run: |-
+          gcloud run deploy profile-downloader-cache-http-function \
+            --source profile-downloader-cache-http-function/. \
+            --function profile-downloader-cache-http-function \
+            --base-image nodejs22 \
+            --region europe-west1
+    # https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=customization-profile
+    # - name: 'glcoud deploy'
+    #   uses: 'google-github-actions/deploy-cloud-functions@v4'
+    #   timeout-minutes: 10
+    #   with:
+    #     name: 'profile-downloader-cache-http-functionn'
+    #     runtime: 'nodejs22'
+    #     region: 'europe-west1'
