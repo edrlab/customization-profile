@@ -2,6 +2,8 @@ name: deploy to cloud-run-function profile-downloader-cache-http-function
 on:
   push:
     branches: [ develop ]
+    paths:
+      - profile-downloader-cache-http-function/**
     tags-ignore:
       - '*'
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
