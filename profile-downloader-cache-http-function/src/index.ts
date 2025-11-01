@@ -17,6 +17,19 @@ interface IArtifact {
 
 http('profile-downloader-cache-http-function', async (req, res) => {
 
+  const requestPath = req.path;
+  console.log("function request path=", requestPath);
+
+  const repositories = requestPath.replaceAll("/", "").replaceAll("\\", "").trim();
+  if (!repositories) {
+    console.error("No repositories found in request path, send error 404", repositories);
+    res.statusCode = 404;
+    res.send();
+    return ;
+  }
+  const artifactRequestParent = (process.env.GCP_ARTIFACT_PARENT || "projects/customization-profile/locations/europe-west1/repositories/REPOSITORIES").replace("REPOSITORIES", repositories);
+  console.log("Set artifact request parent to", artifactRequestParent);
+
   console.log("Artifact registry Connection");
   const artifactregistryClient = new ArtifactRegistryClient();
 
@@ -27,11 +40,12 @@ http('profile-downloader-cache-http-function', async (req, res) => {
     // Construct request
     const request = {
       // parent: "projects/customization-profile/locations/europe-west1/repositories/customization-profile-demo",
-      parent: process.env.GCP_ARTIFACT_PARENT || "projects/customization-profile/locations/europe-west1/repositories/customization-profile-demo"
+      parent: artifactRequestParent,
     };
 
     // Run request
     console.log("ArtifactRegistryClient List file from", request.parent);
+    
     const iterable = artifactregistryClient.listFilesAsync(request);
     for await (const response of iterable) {
       // console.log(response);
@@ -89,32 +103,37 @@ http('profile-downloader-cache-http-function', async (req, res) => {
     }
   }
 
-  await callListFiles();
+  try {
+    await callListFiles();
 
-  if (artifactLatest && artifactLatest.project && artifactLatest.location && artifactLatest.repository && artifactLatest.fileIdentifierRaw && artifactLatest.file?.version) {
-    res.setHeader("ETag", artifactLatest.file.version);
+    if (artifactLatest && artifactLatest.project && artifactLatest.location && artifactLatest.repository && artifactLatest.fileIdentifierRaw && artifactLatest.file?.version) {
+      res.setHeader("ETag", artifactLatest.file.version);
 
-    const IfNoneMatchVersion = req.header("If-None-Match")?.replaceAll("\"", "");
-    console.log("IfNoneMatchVersion=", IfNoneMatchVersion);
-    if (IfNoneMatchVersion && /^(\d+)\.(\d+)\.(\d+)$/.test(IfNoneMatchVersion) && IfNoneMatchVersion === artifactLatest.file.version) {
-      res.statusCode = 304;
-      console.log("IfNotMatch failed, so let's send status 304 not modified");
+      const IfNoneMatchVersion = req.header("If-None-Match")?.replaceAll("\"", "");
+      console.log("IfNoneMatchVersion=", IfNoneMatchVersion);
+      if (IfNoneMatchVersion && /^(\d+)\.(\d+)\.(\d+)$/.test(IfNoneMatchVersion) && IfNoneMatchVersion === artifactLatest.file.version) {
+        res.statusCode = 304;
+        console.log("IfNotMatch failed, send status 304 not modified");
+      } else {
+        console.log("IfNotMatch success, redirect (302) to the latest artifact release");
+        redirectLocation = redirectLocation.replace("PROJECT", artifactLatest.project);
+        redirectLocation = redirectLocation.replace("LOCATION", artifactLatest.location);
+        redirectLocation = redirectLocation.replace("REPOSITORY", artifactLatest.repository);
+        redirectLocation = redirectLocation.replace("FILE", encodeURIComponent(artifactLatest.fileIdentifierRaw));
+        res.statusCode = 302;
+        res.location(redirectLocation);
+      }
+
     } else {
-      console.log("IfNotMatch success, so let's redirect (302) to the latest release");
-      redirectLocation = redirectLocation.replace("PROJECT", artifactLatest.project);
-      redirectLocation = redirectLocation.replace("LOCATION", artifactLatest.location);
-      redirectLocation = redirectLocation.replace("REPOSITORY", artifactLatest.repository);
-      redirectLocation = redirectLocation.replace("FILE", encodeURIComponent(artifactLatest.fileIdentifierRaw));
-      res.statusCode = 302;
-      res.location(redirectLocation);
+      console.error("latest artifact release not found, send error 500");
+      res.statusCode = 500;
     }
-
-  } else {
-
-    console.error("latest artifact not defined, so let's set status code to 500");
+  } catch (e) {
+    console.error(e);
     res.statusCode = 500;
+  } finally {
+    console.log("SEND Header :", res.statusCode, JSON.stringify(res.getHeaders(), null, 4));
+    res.send();
   }
 
-  console.log("SEND Header :", res.statusCode, JSON.stringify(res.getHeaders(), null, 4));
-  res.send();
 });
