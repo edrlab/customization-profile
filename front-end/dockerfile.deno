@@ -5,6 +5,7 @@ COPY --from=node:24 /usr/local/bin/npm /usr/local/bin/npm
 ENV PORT=3000
 WORKDIR /app
 COPY src src/
+COPY gitrevision.json .
 COPY package-deno.json package.json
 COPY package-lock.json .
 COPY tsconfig.json .

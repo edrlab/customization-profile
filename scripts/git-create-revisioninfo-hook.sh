@@ -10,7 +10,7 @@
 ##   cp git-create-revisioninfo-hook.sh .git/hooks/post-merge
 ##   chmod +x .git/hooks/post-*
 
-FILENAME='public/gitrevision.txt'
+FILENAME='front-end/gitrevision.json'
 
 exec 1>&2
 branch=`git rev-parse --abbrev-ref HEAD`

@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "prebuild": "make-dir dist/ && cpy --rename gitrevision.json ../public/gitrevision.txt dist",
+    "prebuild": "make-dir dist/ && cpy gitrevision.json dist",
     "postbuild": "node scripts/preprocessor.js -D__NODE__ dist/index.js",
     "build": "tsc",
     "validate_secrets": "sh ./scripts/validate_secrets_json.sh",

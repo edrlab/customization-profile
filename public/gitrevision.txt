@@ -1,1 +1,0 @@
-{"branch": "develop", "shorthash": "b20595e", "longhash": "b20595ed8737be143d3e32c42045c837abab65d6", "revcount": "22", "latesttag": "b20595ed8737be143d3e32c42045c837abab65d6"}
