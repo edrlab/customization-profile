@@ -28,6 +28,9 @@ app.use('/third-party/**/*', serveStatic({
 app.route('/login', login);
 app.route('/profile', profile);
 
-serve(app, (info) => {
+serve({
+  fetch: app.fetch,
+  port: parseInt(process.env.PORT || "3000", 10),
+}, (info) => {
   console.log(`Listening on http://${info.address}${info.port}`) // Listening on http://localhost:3000
 });

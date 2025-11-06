@@ -62,6 +62,5 @@ jobs:
         service: front-end-node
         image: ${{ env.IMAGE }}
         region: europe-west1
-        allow-unauthenticated: true
     - name: 'Test output'
       run: 'curl "${{ steps.deploy.outputs.url }}"'
