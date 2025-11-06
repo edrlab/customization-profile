@@ -4,8 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "prebuild": "make-dir dist/ && cpy --rename gitrevision.json ../public/gitrevision.txt dist",
     "postbuild": "node scripts/preprocessor.js -D__NODE__ dist/index.js",
-    "build": "node ./node_modules/typescript/bin/tsc",
+    "build": "tsc",
     "validate_secrets": "sh ./scripts/validate_secrets_json.sh",
     "start": "node dist/index.js",
     "clean": "rimraf dist"
@@ -20,6 +21,8 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.0",
+    "cpy-cli": "^6.0.0",
+    "make-dir-cli": "^4.0.0",
     "rimraf": "^6.1.0",
     "typescript": "^5.9.3"
   }

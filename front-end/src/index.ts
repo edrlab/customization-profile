@@ -28,6 +28,11 @@ app.use('/third-party/**/*', serveStatic({
 app.route('/login', login);
 app.route('/profile', profile);
 
+app.get('/info', async (c) => {
+  //@ts-ignore
+  return c.json((await import("./gitrevision.json", { with: { type: "json" } })).default);
+});
+
 
 //#if __NODE__
 serve({
