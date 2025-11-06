@@ -52,7 +52,7 @@ jobs:
     - name: Build and Push Docker image
       run: |
           IMAGE="europe-west1-docker.pkg.dev/customization-profile/cloud-run-front-end-build/front-end-node"
-          docker build -f dockerfile.node -t "$IMAGE:$GITHUB_SHA" --progress=plain .
+          docker build -f front-end/dockerfile.node -t "$IMAGE:$GITHUB_SHA" --progress=plain .
           gcloud auth configure-docker europe-west1-docker.pkg.dev -q
           docker push "$IMAGE:$GITHUB_SHA"
           echo "IMAGE=$IMAGE:$GITHUB_SHA" >> $GITHUB_ENV
