@@ -57,6 +57,7 @@ jobs:
           docker push "$IMAGE:$GITHUB_SHA"
           echo "IMAGE=$IMAGE:$GITHUB_SHA" >> $GITHUB_ENV
     - name: Deploy to Cloud Run
+      id: deploy
       uses: google-github-actions/deploy-cloudrun@v3
       with:
         service: front-end-node
