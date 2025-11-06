@@ -1,0 +1,67 @@
+name: Build and Deploy front-end to Cloud Run with nodejs
+on:
+  push:
+    branches: [ develop ]
+    paths:
+      - front-end/**
+    tags-ignore:
+      - '*'
+# https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+    actions: none
+    checks: none
+    contents: read
+    deployments: none
+    id-token: write
+    issues: none
+    packages: none
+    pages: none
+    pull-requests: none
+    repository-projects: none
+    security-events: none
+    statuses: none
+jobs:
+  build:
+#    if: "!contains(toJSON(github.event.commits.*.message), '[skip-ci]')"
+    if: "!contains(github.event.head_commit.message, 'skip deploy')"
+    runs-on: ubuntu-24.04
+    steps:
+    - run:  |-
+        uname -a
+        arch
+        pwd
+        ls -la
+    - run: 'echo "GITHUB_RUN_NUMBER: ${{ github.run_number }}"'
+    - run: 'echo "GITHUB_RUN_ID: ${{ github.run_id }}"'
+    - run: 'echo "GITHUB_SHA: ${{ github.sha }}"'
+    - name: Checkout this repo
+      uses: actions/checkout@v5
+    - run: 'ls -la'
+    - uses: 'google-github-actions/auth@v3'
+      with:
+        project_id: 'customization-profile'
+        workload_identity_provider: 'projects/681102121093/locations/global/workloadIdentityPools/github-action-identity-pool/providers/github-actions-provider'
+        service_account: 'github-actions-service-account@customization-profile.iam.gserviceaccount.com'
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v3'
+      with:
+        version: '>= 363.0.0'
+    - name: 'Use gcloud CLI'
+      run: 'gcloud info'
+    - name: Build and Push Docker image
+      run: |
+          IMAGE="europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-front-end-build/front-end-node"
+          docker build -f dockerfile.node -t "$IMAGE:$GITHUB_SHA" --progress=plain .
+          gcloud auth configure-docker europe-west1-docker.pkg.dev -q
+          docker push "$IMAGE:$GITHUB_SHA"
+          echo "IMAGE=$IMAGE:$GITHUB_SHA" >> $GITHUB_ENV
+    - name: Deploy to Cloud Run
+      uses: google-github-actions/deploy-cloudrun@v3
+      with:
+        service: front-end-node
+        image: ${{ env.IMAGE }}
+        region: europe-west1
+        allow-unauthenticated: true
+    - name: 'Test output'
+      run: 'curl "${{ steps.deploy.outputs.url }}"'
