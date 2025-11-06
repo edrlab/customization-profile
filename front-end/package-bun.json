@@ -1,0 +1,29 @@
+{
+  "name": "front-end",
+  "version": "1.0.4",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "prebuild": "make-dir dist/ && cpy gitrevision.json dist",
+    "postbuild": "/usr/local/bin/node scripts/preprocessor.js -D__BUN__ dist/index.js",
+    "build": "/usr/local/bin/node ./node_modules/typescript/bin/tsc",
+    "validate_secrets": "sh ./scripts/validate_secrets_json.sh",
+    "start": "bun run ./dist/index.js",
+    "clean": "rimraf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@hono/node-server": "^1.19.6",
+    "hono": "^4.10.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "cpy-cli": "^6.0.0",
+    "make-dir-cli": "^4.0.0",
+    "rimraf": "^6.1.0",
+    "typescript": "^5.9.3"
+  }
+}

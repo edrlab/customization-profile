@@ -44,6 +44,11 @@ serve({
 //#elif __DENO__
 //Deno.serve({ port: parseInt(process.env.PORT || "3000", 10) }, app.fetch) 
 //export default app;
+//#elif __BUN__
+//export default { 
+// port: parseInt(process.env.PORT || "3000", 10), 
+// fetch: app.fetch, 
+//}
 //#else
 //KO
 //#endif

@@ -1,0 +1,16 @@
+FROM ubuntu:24.04
+COPY --from=oven/bun:1 /usr/local/bin/bun /usr/local/bin/bun
+COPY --from=node:24 /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:24 /usr/local/bin/npm /usr/local/bin/npm
+ENV PORT=3000
+WORKDIR /app
+COPY src src/
+COPY gitrevision.json .
+COPY package-bun.json package.json
+COPY package-lock.json .
+COPY tsconfig.json .
+COPY third-party third-party/
+COPY scripts scripts/
+RUN bun install && bun run build
+EXPOSE ${PORT}
+CMD ["bun", "run", "dist/index.js"]
