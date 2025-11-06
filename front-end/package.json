@@ -15,9 +15,11 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@hono/node-server": "^1.19.6",
     "hono": "^4.10.4"
   },
   "devDependencies": {
+    "@types/node": "^24.10.0",
     "rimraf": "^6.1.0",
     "typescript": "^5.9.3"
   }
