@@ -4,10 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "postbuild": "node scripts/preprocessor.js -D__NODE__ dist/index.js",
+    "postbuild": "node scripts/preprocessor.js -D__DENO__ dist/index.js",
     "build": "node ./node_modules/typescript/bin/tsc",
     "validate_secrets": "sh ./scripts/validate_secrets_json.sh",
-    "start": "node dist/index.js",
+    "start": "deno serve --allow-read --allow-env --allow-net ./dist/index.js",
     "clean": "rimraf dist"
   },
   "keywords": [],
@@ -15,9 +15,11 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@hono/node-server": "^1.19.6",
     "hono": "^4.10.4"
   },
   "devDependencies": {
+    "@types/node": "^24.10.0",
     "rimraf": "^6.1.0",
     "typescript": "^5.9.3"
   }

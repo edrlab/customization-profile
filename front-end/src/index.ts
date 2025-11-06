@@ -28,9 +28,17 @@ app.use('/third-party/**/*', serveStatic({
 app.route('/login', login);
 app.route('/profile', profile);
 
+
+//#if __NODE__
 serve({
   fetch: app.fetch,
   port: parseInt(process.env.PORT || "3000", 10),
 }, (info) => {
-  console.log(`Listening on http://${info.address}${info.port}`) // Listening on http://localhost:3000
+  console.log(`Listening on http://${info.address}:${info.port}`) // Listening on http://localhost:3000
 });
+//#elif __DENO__
+//Deno.serve({ port: parseInt(process.env.PORT || "3000", 10) }, app.fetch) 
+//export default app;
+//#else
+//KO
+//#endif
