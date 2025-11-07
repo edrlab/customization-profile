@@ -14,6 +14,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 
 import login from './controller/login.js'
 import profile from './controller/profile.js'
+import { gitInitTest } from './model/git/init.js';
 
 const app = new Hono()
 
@@ -31,6 +32,11 @@ app.route('/profile', profile);
 app.get('/info', async (c) => {
   //@ts-ignore
   return c.json((await import("./gitrevision.json", { with: { type: "json" } })).default);
+});
+
+app.get('/git', async (c) => {
+  await gitInitTest();
+  return c.html("OK");
 });
 
 
