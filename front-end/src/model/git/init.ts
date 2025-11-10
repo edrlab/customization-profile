@@ -1,12 +1,10 @@
 import { simpleGit } from "simple-git";
-import * as path from "path";
 // import * as fsp from "fs/promises";
 import * as fs from "fs";
 
 
-export const gitInitTest = async () => {
+export const gitCloneRepo = async (accessToken: string, gitbaseDir: string /* volume pwd + sessionId*/) => {
 
-    const gitbaseDir = path.join(process.cwd(), "git-repo");
 
     let empty = false;
     if (fs.existsSync(gitbaseDir)) {
@@ -21,7 +19,7 @@ export const gitInitTest = async () => {
     console.log("GIT=", git);
 
     if (empty) {
-        await git.clone('https://github.com/edrlab/customization-profile.git', gitbaseDir, { '--depth': 1, '--no-single-branch': null });
+        await git.clone(`https://x-access-token:${accessToken}@github.com/panaC/customization-profile-data.git`, gitbaseDir, { '--depth': 1, '--no-single-branch': null });
     }
 
     {

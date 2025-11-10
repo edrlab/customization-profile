@@ -8,6 +8,12 @@ COPY package-lock.json .
 COPY tsconfig.json .
 COPY third-party third-party/
 COPY scripts scripts/
-RUN npm install && npm run build
+COPY entrypoint.sh /entrypoint.sh
+
+RUN set -xe; \
+which git && echo OK || echo KO; \
+npm install && npm run build; \
+chmod +x /entrypoint.sh; 
+
 EXPOSE ${PORT}
-CMD ["node", "dist/index.js"]
+CMD ["/entrypoint.sh", "node", "dist/index.js"]

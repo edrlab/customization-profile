@@ -18,11 +18,14 @@
   "dependencies": {
     "@hono/node-server": "^1.19.6",
     "hono": "^4.10.4",
+    "jsonwebtoken": "^9.0.2",
     "simple-git": "^3.30.0"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.0",
     "cpy-cli": "^6.0.0",
+    "dotenv": "^17.2.3",
     "make-dir-cli": "^4.0.0",
     "rimraf": "^6.1.0",
     "typescript": "^5.9.3"
