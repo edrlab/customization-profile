@@ -2,8 +2,13 @@ import { simpleGit, type SimpleGit } from "simple-git";
 
 export const gitInit = async (gitbaseDir: string) => {
     
-    const git = simpleGit({ baseDir: gitbaseDir });
-    return git;
+    let git: SimpleGit;
+    try {
+        git = simpleGit({ baseDir: gitbaseDir, binary: process.env.__GIT_PATH || "git" });
+        return git;
+    } catch (e) {
+        throw new Error("ERROR [GIT]: " + e);
+    }
 } 
 
 export const gitCheckout = async (git: SimpleGit, branchName: string) => {

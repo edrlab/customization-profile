@@ -4,9 +4,9 @@ import { Layout } from '../view/layout.js';
 import { validator } from 'hono/validator';
 import { authenticationValidatorFunction } from './authentication.validator.js';
 import { githubAppAuthentication } from '../model/git/auth.js';
-import * as path from "path";
-import * as fsp from "fs/promises";
-import * as fs from "fs";
+import * as path from "node:path";
+import * as fsp from "node:fs/promises";
+import * as fs from "node:fs";
 import { gitBranch, gitClone, gitInit, gitListRemote, gitPull, gitRemoteShowOrigin, gitStatus, gitUpdateRemoteOrigin } from '../model/git/cmd.js';
 import type { IAuthentication } from '../model/authentication.js';
 
@@ -98,6 +98,20 @@ profile.get('/',
         }
         const git = await gitInit(gitbaseDir);
 
+        try {
+            await gitStatus(git);
+        } catch (e) {
+            console.error(`Cannot read the git repo (status error), Error:${e}`);
+            try {
+                await fsp.rm(gitbaseDir, { recursive: true, force: true });
+            } catch (e) {
+                console.error(`Not removed: ${e}`);
+                throw new Error("Critical error with the FileSystem, the directory cannot be removed");
+            } finally {
+                empty = true;
+            }
+        }
+
         let githubAppAuthenticationDone = false;
         const getAccessToken = async () => {
             const { accessToken, expiresAt } = await githubAppAuthentication("2266048", "Iv23liRWL5nzrIEuBv5U", privateKey);
@@ -114,7 +128,11 @@ profile.get('/',
 
         if (empty) {
             const accessToken = await getAccessToken();
-            await gitClone(git, accessToken, gitbaseDir);
+            try {
+                await gitClone(git, accessToken, gitbaseDir);
+            } catch (e) {
+                throw new Error(`Git Clone Error=${e}`);
+            }
             console.log("Git Clone Finish");
 
             try {
@@ -136,11 +154,15 @@ profile.get('/',
             if (cookieData.expiresAt && Date.now() <= Date.parse(cookieData.expiresAt)) {
                 console.log(`github app authentication access-token not expired, date=${cookieData.expiresAt}`);
             } else {
-                console.log(`cookieData.expiresAt=${cookieData.expiresAt} is not defined or revoked`);
+                console.log(`cookieData.expiresAt="${cookieData.expiresAt}" is not defined or revoked`);
                 const accessToken = await getAccessToken();
-                await gitUpdateRemoteOrigin(git, accessToken);
-                await gitListRemote(git);
-                await gitRemoteShowOrigin(git);
+                try {
+                    gitUpdateRemoteOrigin(git, accessToken);
+                    await gitListRemote(git);
+                    await gitRemoteShowOrigin(git);
+                } catch (e) {
+                    throw new Error(`Cannot update the git remote Error:${e}`);
+                }
             }
         }
 
@@ -158,14 +180,18 @@ profile.get('/',
             const accessToken = await getAccessToken();
 
             console.log("update remote origin with the new accessToken");
-            gitUpdateRemoteOrigin(git, accessToken);
-            await gitListRemote(git);
+            try {
+                gitUpdateRemoteOrigin(git, accessToken);
+                await gitListRemote(git);
+                await gitRemoteShowOrigin(git);
+            } catch (e) {
+                throw new Error(`Cannot update the git remote Error:${e}`);
+            }
             try {
                 console.log("Check git remote access (2)");
                 await gitPull(git, "main"); // TODO: branch name
                 await gitStatus(git);
                 await gitBranch(git);
-                await gitRemoteShowOrigin(git);
             } catch (e) {
                 throw new Error(`Critical error with the git remote access`);
             }

@@ -2,8 +2,9 @@ import { Hono } from 'hono'
 import { logger } from 'hono/logger'
 import { serve } from '@hono/node-server'
 
-// TODO: disable it with preprocessing variable __BUILD__ in build mode (not dev mode)
+//#if __DEV__
 import 'dotenv/config'
+//#endif
 
 //#if __NODE__
 import { serveStatic } from '@hono/node-server/serve-static';
@@ -32,11 +33,6 @@ app.use('/third-party/**/*', serveStatic({
 }));
 app.route('/login', login);
 app.route('/profile', profile);
-
-app.get('/crash', (c) => {
-  throw new Error("Boom!");
-  return c.html('crash');
-})
 
 app.get("/health", (c) => {
   return c.html("ok");
@@ -69,7 +65,6 @@ serve({
 });
 //#elif __DENO__
 //Deno.serve({ port: parseInt(process.env.PORT || "3000", 10) }, app.fetch) 
-//export default app;
 //#elif __BUN__
 //export default { 
 // port: parseInt(process.env.PORT || "3000", 10), 
