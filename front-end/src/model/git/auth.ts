@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 // https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app
 // https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-an-organization-installation-for-the-authenticated-app
 export const githubAppAuthentication = async (githubAppId: string, clientId: string, privateKey: string) => {
+    console.log("Get Access Token From the Github App");
 
     console.log("Generating JWT...");
     const now = Math.floor(Date.now() / 1000);

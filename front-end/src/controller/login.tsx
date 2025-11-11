@@ -7,6 +7,7 @@ import type { IAuthentication } from '../model/authentication.js';
 import { authenticationValidatorFunction } from './authentication.validator.js';
 import { setSignedCookie } from 'hono/cookie';
 import * as secrets from "../secrets.json" with { type: "json" };
+import { nanoid } from 'nanoid';
 
 const login = new Hono();
 
@@ -53,6 +54,8 @@ login.post('/validate',
                 timestamp: Date.now(),
                 counter: cookie?.counter || 1,
                 lastConnectionTime: Date.now(),
+                sessionId: cookie?.sessionId || nanoid(),
+                expiresAt: "",
             }
             await setSignedCookie(c, 'authentication', JSON.stringify(auth), secrets.default.key);
             return c.redirect('/profile');
@@ -76,6 +79,8 @@ login.get('/logout',
             timestamp: 0, // logout
             counter: cookie?.counter || 1,
             lastConnectionTime: cookie.lastConnectionTime,
+            sessionId: cookie?.sessionId || nanoid(),
+            expiresAt: "",
         }
         await setSignedCookie(c, 'authentication', JSON.stringify(auth), secrets.default.key);
         return c.redirect('/login');

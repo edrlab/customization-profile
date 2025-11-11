@@ -4,8 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "prebuild": "make-dir dist/ && cpy gitrevision.json dist",
-    "postbuild": "node scripts/preprocessor.js -D__NODE__ dist/index.js",
+    "postbuild_": "node scripts/preprocessor.js -D__NODE__ dist/index.js",
     "build": "tsc",
     "validate_secrets": "sh ./scripts/validate_secrets_json.sh",
     "start": "node dist/index.js",
@@ -19,6 +18,7 @@
     "@hono/node-server": "^1.19.6",
     "hono": "^4.10.4",
     "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.1.6",
     "simple-git": "^3.30.0"
   },
   "devDependencies": {
