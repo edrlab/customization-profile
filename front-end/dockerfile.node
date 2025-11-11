@@ -1,7 +1,6 @@
 FROM node:24
 ENV PORT=3000
 WORKDIR /app
-COPY gitrevision.json .
 COPY src src/
 COPY package.json .
 COPY package-lock.json .
