@@ -4,20 +4,25 @@ import { Layout } from '../view/layout.js';
 import { Login } from '../view/login.js';
 import { validator } from 'hono/validator'
 import type { IAuthentication } from '../model/authentication.js';
-import { authenticationValidatorFunction } from './authentication.validator.js';
+// import { authenticationValidatorFunction } from './authentication.js';
 import { setSignedCookie } from 'hono/cookie';
 import * as secrets from "../secrets.json" with { type: "json" };
 import { nanoid } from 'nanoid';
+import { authenticationMiddleware } from '../middleware/authentication.js';
 
-const login = new Hono();
+const login = new Hono()
+    .use(authenticationMiddleware);
 
 login.get('/',
-    validator('cookie', authenticationValidatorFunction),
+    validator('cookie', async (cookies, c) => {
+        if (!cookies["session"]) {
+            const cookie = {session: nanoid(), expiresAt: ""};
+            console.log("set session cookie=", cookie);
+            await setSignedCookie(c, "session", JSON.stringify(cookie), secrets.default.key);
+        }
+    }),
     (c) => {
 
-        if (c.req.valid("cookie").auth) {
-            return c.redirect("/profile");
-        }
         return c.html(
             <Layout title='Login'>
                 <Login invalid={!!c.req.queries("invalid")} />
@@ -25,7 +30,6 @@ login.get('/',
     });
 
 login.post('/validate',
-    validator('cookie', authenticationValidatorFunction),
     validator('form', (value, _c) => {
         // console.log("[VALIDATOR]: form value=", JSON.stringify(value, null, 4));
 
@@ -44,7 +48,7 @@ login.post('/validate',
         const { user } = c.req.valid('form');
         console.log("authenticated=", user);
 
-        const { auth: _auth, cookie } = c.req.valid('cookie'); 
+        const cookie = c.var.auth;
 
         if (user) {
             // authentication
@@ -54,8 +58,6 @@ login.post('/validate',
                 timestamp: Date.now(),
                 counter: cookie?.counter || 1,
                 lastConnectionTime: Date.now(),
-                sessionId: cookie?.sessionId || nanoid(),
-                expiresAt: "",
             }
             await setSignedCookie(c, 'authentication', JSON.stringify(auth), secrets.default.key);
             return c.redirect('/profile');
@@ -65,11 +67,10 @@ login.post('/validate',
     })
 
 login.get('/logout',
-    validator('cookie', authenticationValidatorFunction),
     async (c) => {
 
-        const { auth: authenticated, cookie } = c.req.valid('cookie'); 
-        if (!authenticated) {
+        const cookie = c.var.auth;
+        if (!cookie) {
             return c.status(404);
         }
 
@@ -79,8 +80,6 @@ login.get('/logout',
             timestamp: 0, // logout
             counter: cookie?.counter || 1,
             lastConnectionTime: cookie.lastConnectionTime,
-            sessionId: cookie?.sessionId || nanoid(),
-            expiresAt: "",
         }
         await setSignedCookie(c, 'authentication', JSON.stringify(auth), secrets.default.key);
         return c.redirect('/login');
