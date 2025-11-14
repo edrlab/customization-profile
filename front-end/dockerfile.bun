@@ -32,7 +32,7 @@ RUN set -xe; \
 which git && echo OK || echo KO; \
 which bun && echo OK || echo KO; \
 which node && echo OK || echo KO; \
-bun install && bun run build:container; \
+bun install && bun run lint && bun run build:container; \
 chmod +x /entrypoint.sh; 
 
 

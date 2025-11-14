@@ -4,11 +4,11 @@ import * as path from "node:path";
 import * as fsp from "node:fs/promises";
 import * as fs from "node:fs";
 import { gitBranch, gitCheckout, gitClone, gitInstance, gitListRemote, gitPull, gitRemoteShowOrigin, gitShowRefBranch, gitUpdateRemoteOrigin } from './cmd.js';
-import type { IAuthentication } from '../authentication.js';
+import type { IAuthentication } from '../cookie.js';
 
 import * as secrets from "../../secrets.json" with { type: "json" };
 
-export const gitInit = async (auth: IAuthentication, sessionId: string, expiresAt: string): Promise<{ git: SimpleGit, expiresAt: string }> => {
+export const gitInit = async (auth: IAuthentication, sessionId: string, expiresAt: string): Promise<{ git: SimpleGit, expiresAt: string, gitbaseDir: string }> => {
 
     const user = secrets.default.users.find(({ id }) => auth.id === id);
     if (!user) {
@@ -62,7 +62,7 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
             try {
                 await fsp.rm(gitbaseDir, { recursive: true, force: true });
             } catch (e) {
-                console.error(`Not removed: ${e}`);
+                console.error(`Not removed: ${String(e)}`);
                 throw new Error("Critical error with the FileSystem, the directory cannot be removed");
             } finally {
                 empty = true;
@@ -75,7 +75,7 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
             console.log(`mkdir=${gitbaseDir}`);
             await fsp.mkdir(gitbaseDir);
         } catch (e) {
-            console.error(`cannot create directory=${gitbaseDir}, error=${e}`);
+            console.error(`cannot create directory=${gitbaseDir}, error=${String(e)}`);
             throw new Error(`Critical error with the FileSystem, cannot create directory=${gitbaseDir}`);
         }
     }
@@ -88,7 +88,7 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
         try {
             await fsp.rm(dotGitPath, { recursive: true, force: true });
         } catch (e) {
-            console.error(`Not removed: ${e}`);
+            console.error(`Not removed: ${String(e)}`);
             throw new Error("Critical error with the FileSystem, the directory cannot be removed");
         } finally {
             empty = true;
@@ -113,7 +113,7 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
         try {
             await gitClone(git, accessToken, gitbaseDir, branchName);
         } catch (e) {
-            throw new Error(`Git Clone Error=${e}`);
+            throw new Error(`Git Clone Error=${String(e)}`);
         }
         console.log("Git Clone Finish");
 
@@ -141,11 +141,11 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
             const accessToken = githubAuthResult.accessToken;
             expiresAt = githubAuthResult.expiresAt;
             try {
-                gitUpdateRemoteOrigin(git, accessToken);
+                await gitUpdateRemoteOrigin(git, accessToken);
                 await gitListRemote(git);
                 await gitRemoteShowOrigin(git);
             } catch (e) {
-                throw new Error(`Cannot update the git remote Error:${e}`);
+                throw new Error(`Cannot update the git remote Error:${String(e)}`);
             }
         }
     }
@@ -165,7 +165,7 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
     try {
         await gitPull(git, branchName);
     } catch (e) {
-        console.error(`exception error with the git remote to access it, error=${e}`);
+        console.error(`exception error with the git remote to access it, error=${String(e)}`);
 
         if (githubAppAuthenticationDone) {
             throw new Error("GithubApp Authentication already done but no git remote access");
@@ -176,11 +176,11 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
 
         console.log("update remote origin with the new accessToken");
         try {
-            gitUpdateRemoteOrigin(git, accessToken);
+            await gitUpdateRemoteOrigin(git, accessToken);
             await gitListRemote(git);
             await gitRemoteShowOrigin(git);
         } catch (e) {
-            throw new Error(`Cannot update the git remote Error:${e}`);
+            throw new Error(`Cannot update the git remote Error:${String(e)}`);
         }
         try {
             console.log("Check git remote access (2)");
@@ -192,6 +192,7 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
 
     return {
         git,
-        expiresAt
+        expiresAt,
+        gitbaseDir,
     }
 }

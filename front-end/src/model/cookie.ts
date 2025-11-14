@@ -8,3 +8,8 @@ export interface IAuthentication {
     counter: number;
     lastConnectionTime: number;
 }
+
+export interface ISession {
+    session: string;
+    expiresAt: string;
+}

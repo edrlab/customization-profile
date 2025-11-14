@@ -43,6 +43,7 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    
-  }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "ignore": ["dist/**", "node_modules/**"],
 }

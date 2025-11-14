@@ -7,7 +7,7 @@ export const gitInstance = (gitbaseDir: string) => {
         git = simpleGit({ baseDir: gitbaseDir, binary: process.env.__GIT_PATH || "git" });
         return git;
     } catch (e) {
-        throw new Error("ERROR [GIT]: " + e);
+        throw new Error(`ERROR [GIT]: ${String(e)}`);
     }
 } 
 

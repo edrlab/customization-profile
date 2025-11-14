@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import type { JsonArray } from "../manifest.js";
 
 // https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys#set-up-installation-access-tokens
 // https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app
@@ -25,21 +26,21 @@ export const githubAppAuthentication = async (githubAppId: string, clientId: str
         });
 
         if (!installationsRequest.ok) {
-            throw `status:${installationsRequest.status} error:${installationsRequest.statusText}`;
+            throw new Error(`status:${installationsRequest.status} error:${installationsRequest.statusText}`);
         }
 
-        const installationArrayData = await installationsRequest.json();
+        const installationArrayData = await installationsRequest.json() as JsonArray;
         if (!Array.isArray(installationArrayData)) {
-            throw `not a json array ${typeof installationArrayData}`;
+            throw new Error(`not a json array ${typeof installationArrayData}`);
         }
-        const installationWithClientId = installationArrayData.find(({ client_id }) => client_id === clientId);
+        const installationWithClientId = installationArrayData.find((jsonData) => (jsonData as any).client_id === clientId);
         if (!installationWithClientId) {
-            throw `installation json not found with clientid: ${clientId}`;
+            throw new Error(`installation json not found with clientid: ${clientId}`);
         }
-        installationId = installationWithClientId.id as string;
+        installationId = (installationWithClientId as any).id as string;
 
     } catch (e) {
-        throw new Error(`github app authentication error, cannot fetch app installation: ${e}`);
+        throw new Error(`github app authentication error, cannot fetch app installation: ${String(e)}`);
     }
 
     console.log("Using installation ID:", installationId);
@@ -59,17 +60,17 @@ export const githubAppAuthentication = async (githubAppId: string, clientId: str
         });
 
         if (!tokenRequest.ok) {
-            throw `status:${tokenRequest.status} error:${tokenRequest.statusText}`;
+            throw new Error(`status:${tokenRequest.status} error:${tokenRequest.statusText}`);
         }
-        const tokenData = await tokenRequest.json();
-        if (typeof tokenData.token === "string" && typeof tokenData.expires_at === "string") {
-            accessToken = tokenData.token;
-            expiresAt = tokenData.expires_at;
+        const tokenData = await tokenRequest.json() as JSON;
+        if (typeof tokenData === "object" && typeof (tokenData as any).token === "string" && typeof (tokenData as any).expires_at === "string") {
+            accessToken = (tokenData as any).token;
+            expiresAt = (tokenData as any).expires_at;
         } else {
-            throw `not valid token data: ${JSON.stringify(tokenData)}`;
+            throw new Error(`not valid token data: ${JSON.stringify(tokenData)}`);
         }
     } catch (e) {
-        throw new Error(`github app authentication error, cannot fetch access-token: ${e}`);
+        throw new Error(`github app authentication error, cannot fetch access-token: ${String(e)}`);
     }
 
     console.log("Access token:", accessToken);

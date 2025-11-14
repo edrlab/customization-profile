@@ -1,9 +1,8 @@
 
 import { Hono } from 'hono'
-import { Layout } from '../view/layout.js';
 import { Login } from '../view/login.js';
 import { validator } from 'hono/validator'
-import type { IAuthentication } from '../model/authentication.js';
+import type { IAuthentication } from '../model/cookie.js';
 // import { authenticationValidatorFunction } from './authentication.js';
 import { setSignedCookie } from 'hono/cookie';
 import * as secrets from "../secrets.json" with { type: "json" };
@@ -23,10 +22,12 @@ login.get('/',
     }),
     (c) => {
 
-        return c.html(
-            <Layout title='Login'>
+        return c.render(
+            <>
+                <title>LOGIN</title>
                 <Login invalid={!!c.req.queries("invalid")} />
-            </Layout>);
+            </>
+        );
     });
 
 login.post('/validate',
@@ -71,7 +72,7 @@ login.get('/logout',
 
         const cookie = c.var.auth;
         if (!cookie) {
-            return c.status(404);
+            c.status(404); return;
         }
 
         const auth: IAuthentication = {

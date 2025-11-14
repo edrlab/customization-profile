@@ -1,11 +1,11 @@
 import * as secrets from "../secrets.json" with { type: "json" };
-import type { IAuthentication } from "../model/authentication.js";
+import type { IAuthentication } from "../model/cookie.js";
 import { getSignedCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 
 export const authenticationMiddleware =  createMiddleware<{
   Variables: {
-    auth: IAuthentication
+    auth: IAuthentication | undefined,
   }
 }>(async (c, next) => {
 

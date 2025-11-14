@@ -10,7 +10,6 @@ export const Layout = (props: {title: string, children?: any}) => {
     <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="/third-party/css/pico.classless.indigo.css">
     <link rel="stylesheet" href="/third-party/css/gridlex.css">
-    <title>${props.title}</title>
   </head>
   <body>
     <main>

@@ -18,7 +18,6 @@ import { serveStatic } from '@hono/node-server/serve-static';
 
 import login from './controller/login.js'
 import profile from './controller/profile.js'
-import { Layout } from './view/layout.js';
 // import { Layout } from './view/layout.js';
 
 const app = new Hono()
@@ -31,6 +30,28 @@ app.use('/third-party/**/*', serveStatic({
     c.header('Cache-Control', `public, immutable, max-age=31536000`)
   },
 }));
+
+app.use('*', async (c, next) => {
+  c.setRenderer((content) => {
+    return c.html(
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="color-scheme" content="light dark" />
+          <link rel="stylesheet" href="/third-party/css/pico.classless.indigo.css" />
+          <link rel="stylesheet" href="/third-party/css/gridlex.css" />
+        </head>
+        <body>
+          <main>
+            {content}
+          </main>
+        </body>
+      </html>);
+  });
+  await next();
+});
+
 app.route('/login', login);
 app.route('/profile', profile);
 
@@ -39,20 +60,24 @@ app.get("/health", (c) => {
 });
 
 app.notFound((c) => {
-  return c.html(
-    <Layout title='404 not found'>
+  return c.render(
+    <>
+      <title>404 Not Found</title>
       <h1>404 Not Found</h1>
-    </Layout>, 404);
+    </>
+  )
 });
 
 app.onError((err, c) => {
   console.error("[app.onError]:", err);
-  return c.html(
-    <Layout title='500 internal server error'>
+  return c.render(
+    <>
+      <title>500 internal server error</title>
       <h1>500 internal server error</h1>
       <pre>{err.stack || err.message}</pre>
       <p>Timestamp: {Date.now()}</p>
-    </Layout>, 500);
+    </>
+  );
 })
 
 
