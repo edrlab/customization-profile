@@ -31,6 +31,16 @@ app.use('/third-party/**/*', serveStatic({
   },
 }));
 
+app.use('/dist/client/**/*', serveStatic({
+  root: "./",
+  // onNotFound((path) => {
+  //   console.log("NOT FOUND", path);
+  // }),
+  onNotFound: (path) => {
+    console.log("[NOT FOUND PATH=]", path);
+  }
+}));
+
 app.use('*', async (c, next) => {
   c.setRenderer((content) => {
     return c.html(
@@ -41,6 +51,8 @@ app.use('*', async (c, next) => {
           <meta name="color-scheme" content="light dark" />
           <link rel="stylesheet" href="/third-party/css/pico.classless.indigo.css" />
           <link rel="stylesheet" href="/third-party/css/gridlex.css" />
+          <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" defer></script>
+          <script src="/dist/client/client.js" type="module"></script>
         </head>
         <body>
           <main>
@@ -60,6 +72,7 @@ app.get("/health", (c) => {
 });
 
 app.notFound((c) => {
+  c.status(404);
   return c.render(
     <>
       <title>404 Not Found</title>
@@ -70,6 +83,7 @@ app.notFound((c) => {
 
 app.onError((err, c) => {
   console.error("[app.onError]:", err);
+  c.status(500);
   return c.render(
     <>
       <title>500 internal server error</title>

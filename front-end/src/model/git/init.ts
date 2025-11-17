@@ -8,7 +8,7 @@ import type { IAuthentication } from '../cookie.js';
 
 import * as secrets from "../../secrets.json" with { type: "json" };
 
-export const gitInit = async (auth: IAuthentication, sessionId: string, expiresAt: string): Promise<{ git: SimpleGit, expiresAt: string, gitbaseDir: string }> => {
+export const gitInit = async (auth: IAuthentication, sessionId: string, expiresAt: string): Promise<{ git: SimpleGit, expiresAt: string, gitbaseDir: string, branchName: string }> => {
 
     const user = secrets.default.users.find(({ id }) => auth.id === id);
     if (!user) {
@@ -194,5 +194,6 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
         git,
         expiresAt,
         gitbaseDir,
+        branchName,
     }
 }

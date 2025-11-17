@@ -65,3 +65,36 @@ export const gitCheckout = async (git: SimpleGit, branch: string) => {
     const checkout = await git.raw("checkout", branch);
     console.log("GIT checkout", checkout);
 }
+
+export const gitAdd = async (git: SimpleGit, file: string) => {
+
+    const add = await git.raw("add", file);
+    console.log("GIT add " + file, add);
+}
+
+export const gitDiffNoPager = async (git: SimpleGit) => {
+
+    const diff = await git.raw("--no-pager", "diff", "HEAD");
+    return diff;
+}
+
+export const gitCommit = async (git: SimpleGit, message: string) => {
+
+    const commit = await git.raw("commit", "-m", message);
+    console.log("GIT commit", commit);
+    return commit;
+}
+
+export const gitPush = async (git: SimpleGit, branch: string) => {
+
+    const push = await git.raw("push", "origin", branch);
+    console.log("GIT push origin " + branch, push);
+    return push;
+}
+
+export const gitLog = async (git: SimpleGit) => {
+
+    const logs = await git.log();
+    console.log("GIT logs", logs);
+    return logs;
+}

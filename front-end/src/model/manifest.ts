@@ -232,6 +232,7 @@ export const customizationManifestJsonSchema = {
 };
 
 
+// TODO: do not let global variable
 export let __CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS = "";
 export function isCustomizationProfileManifest(data: any): data is ICustomizationManifest {
 

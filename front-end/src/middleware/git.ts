@@ -10,6 +10,7 @@ export const gitMiddleware = createMiddleware<{
     auth: IAuthentication,
     git: SimpleGit,
     gitDirectory: string,
+    branchName: string,
   }
 }>(async (c, next) => {
 
@@ -23,7 +24,7 @@ export const gitMiddleware = createMiddleware<{
     }
 
     const { session, expiresAt } = JSON.parse(sessionCookie) as ISession;
-  const { git, expiresAt: expiresAtReceived, gitbaseDir } = await gitInit(c.var.auth, session, expiresAt);
+  const { git, expiresAt: expiresAtReceived, gitbaseDir, branchName } = await gitInit(c.var.auth, session, expiresAt);
     if (expiresAt !== expiresAtReceived) {
         const cookie: ISession = {session: session, expiresAt: expiresAtReceived};
         await setSignedCookie(c, 'session', JSON.stringify(cookie), secrets.default.key);
@@ -32,6 +33,7 @@ export const gitMiddleware = createMiddleware<{
 
     c.set('git', git);
     c.set('gitDirectory', gitbaseDir);
+    c.set('branchName', branchName);
 
     await next();
 });
