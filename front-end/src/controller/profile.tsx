@@ -107,13 +107,7 @@ profile.post('/',
 
         return c.status(400);
 
-    }).onError((err, c) => {
-
-    return c.html(
-        <pre>Error: {String(err)}</pre>
-    )
-
-});
+    });
 
 profile.post('/check',
     gitMiddleware,
@@ -181,13 +175,7 @@ profile.post('/check',
             </>
         )
     }
-).onError((err, c) => {
-
-    return c.html(
-        <pre>Error: {String(err)}</pre>
-    )
-
-});
+);
 
 profile.post('/commit',
     gitMiddleware,
@@ -217,13 +205,7 @@ LOGS: "${JSON.stringify(logs, null, 4)}"
             </>
         )
     }
-).onError((err, c) => {
-
-    return c.html(
-        <pre>Error: {String(err)}</pre>
-    )
-
-})
+);
 
 export default profile;
 

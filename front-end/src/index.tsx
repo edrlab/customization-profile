@@ -18,6 +18,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 
 import login from './controller/login.js'
 import profile from './controller/profile.js'
+import upload from './controller/upload.js';
 // import { Layout } from './view/layout.js';
 
 const app = new Hono()
@@ -66,6 +67,7 @@ app.use('*', async (c, next) => {
 
 app.route('/login', login);
 app.route('/profile', profile);
+app.route('/upload', upload);
 
 app.get("/health", (c) => {
   return c.html("ok");
@@ -83,6 +85,15 @@ app.notFound((c) => {
 
 app.onError((err, c) => {
   console.error("[app.onError]:", err);
+
+  const htmxRequest = c.req.header("HX-Request");
+  if (typeof htmxRequest === "string" && htmxRequest === "true") {
+    c.status(200);
+    return c.html(
+      <pre>{String(err)}</pre>
+    )
+  }
+
   c.status(500);
   return c.render(
     <>
