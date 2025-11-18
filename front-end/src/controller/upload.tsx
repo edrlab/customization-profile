@@ -3,27 +3,19 @@ import { Hono } from 'hono'
 import { authenticationMiddleware } from '../middleware/authentication.js';
 import { gitMiddleware } from '../middleware/git.js';
 import * as fsp from "node:fs/promises";
+import * as fs from "node:fs";
 import { validator } from 'hono/validator';
-// import * as path from "node:path"
+import * as path from "node:path"
+import { pipeline } from 'node:stream/promises';
 // import { __CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS, __DEFAULT_MANIFEST_TEMPLATE, isCustomizationProfileManifest, type ICustomizationManifest } from '../model/manifest.js';
 // import { validator } from 'hono/validator';
-// import { gitAdd, gitCommit, gitDiffNoPager, gitLog, gitPush } from '../model/git/cmd.js';
+import { gitAdd, gitCommit, gitDiffNoPager, gitLog, gitPush } from '../model/git/cmd.js';
 
 const upload = new Hono()
     .use(authenticationMiddleware);
 
 upload.on(['GET', 'POST'], '/',
     gitMiddleware,
-    validator('form', (value) => {
-
-        console.log("[VALIDATOR] value=", value);
-
-        if (value.binaryFile) {
-            return value.binaryFile as File;
-        }
-
-        return undefined;
-    }),
     async (c) => {
 
     console.log("GIT=", c.var.git);
@@ -52,22 +44,19 @@ upload.on(['GET', 'POST'], '/',
     _files.sort(([a], [b]) => a.localeCompare(b));
 
         console.log("Files:", _files);
-        const binaryFile = c.req.valid('form');
 
         return c.render(
             <>
                 <h1>Upload:</h1>
-                <form method="post" id="binaryForm" enctype="multipart/form-data" hx-swap="outerHTML" hx-target="#binaryForm">
-                    <input hx-preserve id="someId" type="file" name="binaryFile" />
-                    <button hx-confirm={`do you want to commit this file?`} hx-put="/upload/file" type="submit">commit the file</button>
+                <form method="post" id="upload-form" enctype="multipart/form-data" hx-swap="outerHTML" hx-confirm={`do you want to commit this file?`} hx-put="/upload/file" hx-target="#upload-file-output">
+                    <input hx-preserve id="upload-file" type="file" name="uploadFile" />
+                    <label for='filePath'>File Path:</label>
+                    <input hx-preserve id="file-path" type="text" name="filePath" placeholder='/' />
+                    <button  type="submit">upload this file</button>
+                    <progress id='progress' value='0' max='100'></progress>
                 </form>
-                {
-                    binaryFile
-                        ? <div>
-                            <p>uploaded: "{binaryFile.name}" size={Math.round(binaryFile.size / 1024)}ko type={binaryFile.type}</p>
-                        </div>
-                        : <></>
-                }
+                <div id="upload-file-output"></div>
+
 
                 <hr></hr>
 
@@ -105,5 +94,141 @@ upload.on(['GET', 'POST'], '/',
         );
     });
 
+
+upload.put('/file',
+    gitMiddleware,
+    validator('form', (value): [file:File|undefined,filePath:string|undefined] => {
+
+        console.log("[VALIDATOR] value=", value);
+
+        if (value.uploadFile instanceof File && typeof value.filePath === "string") {
+            console.log("uploadFile of type File");
+            const filePathNormalize = path.resolve("/", path.normalize(value.filePath));
+            return [value.uploadFile, filePathNormalize.substring(1)];
+        } else {
+            console.log("uploadFile not an instance of file: ", typeof value.uploadFile);
+        }
+
+        return [undefined, undefined];
+    }),
+    async (c) => {
+
+        console.log("GIT=", c.var.git);
+        console.log("GIT directory=", c.var.gitDirectory);
+
+        const [uploadedFile, filePath] = c.req.valid('form');
+        if (!uploadedFile) {
+            throw new Error("no file uploaded");
+        }
+        const relativeFilePath = filePath
+            ? path.extname(filePath)
+                ? filePath
+                : path.join(filePath, uploadedFile.name)
+            : uploadedFile.name;
+        const absoluteFilePath = path.resolve(c.var.gitDirectory, relativeFilePath);
+
+        const readStream = uploadedFile.stream();
+
+        const dirName = path.dirname(absoluteFilePath);
+        if (dirName !== c.var.gitDirectory) {
+            await fsp.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+        }
+        // await fsp.writeFile(absoluteFilePath, §, { encoding: "utf-8"});
+
+        const writeStream = fs.createWriteStream(absoluteFilePath, { encoding: "utf-8", flags: "w" });
+
+        writeStream.on('open', () => {
+            console.log("WriteStream open");
+        })
+
+        writeStream.on("close", () => {
+            console.log("WriteStream close");
+        })
+
+        writeStream.on("error", (err) => {
+            console.log("WriteStream error:" + String(err));
+        });
+
+        await pipeline(
+            readStream,
+            // async function* (source) {
+            //     for await (const chunk of source) {
+            //         console.log("DATA:", chunk);
+            //         yield chunk.toString();
+            //     }
+            // },
+            writeStream
+        );
+
+        writeStream.end();
+        writeStream.close();
+
+        return c.html(
+            <>
+                <details>
+                    <summary>Commit INFO:</summary>
+                    <p>uploaded: "{uploadedFile.name}" size={Math.round(uploadedFile.size / 1024)}ko type={uploadedFile.type} filePath={absoluteFilePath}</p>
+                </details>
+                <button hx-post={`/upload/commit?file=${encodeURI(relativeFilePath)}`} hx-target="#output-commit">commit</button>
+                <div id="output-commit"></div>
+            </>
+        )
+    });
+
+upload.post('/commit',
+    gitMiddleware,
+    validator('query', async (value, c) => {
+
+        const file = value.file;
+        if (typeof file === "string") {
+            const filePathAbs = path.resolve(c.var.gitDirectory as string, file);
+            console.log(`Check if ${filePathAbs} exists`);
+            await fsp.access(filePathAbs, fs.constants.R_OK);
+
+            return filePathAbs;
+        }
+
+        return undefined;
+
+    }),
+    async (c) => {
+
+        const git = c.var.git;
+        console.log("GIT=", c.var.git);
+        console.log("GIT directory=", c.var.gitDirectory);
+        const filePath = c.req.valid('query');
+        if (!filePath) {
+            throw new Error("No FilePath found");
+        }
+
+        await gitAdd(git, filePath);
+        const diff = await gitDiffNoPager(git);
+
+        if (!diff) {
+            return c.html(
+                <pre>no data change, nothing to commit</pre>
+            );
+        }
+
+        const commitMessage = await gitCommit(git, `add ${filePath}`);
+
+        const pushMessage = await gitPush(git, c.var.branchName);
+
+        const logs = await gitLog(git);
+
+        const res = `
+COMMIT: "${commitMessage}"
+PUSH: "${pushMessage}"
+LOGS: "${JSON.stringify(logs, null, 4)}"
+        `;
+
+        return c.html(
+            <>
+                <h1>DONE</h1>
+                <pre>{res}</pre>
+            </>
+        )
+    }
+)
 
 export default upload;
