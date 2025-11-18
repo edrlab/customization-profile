@@ -98,3 +98,9 @@ export const gitLog = async (git: SimpleGit) => {
     console.log("GIT logs", logs);
     return logs;
 }
+
+export const gitRm = async (git: SimpleGit, filePath: string) => {
+
+    const rm = await git.raw("rm", "-rf", "--cached", filePath);
+    console.log("GIT rm -rf --cached " + filePath, rm);
+}

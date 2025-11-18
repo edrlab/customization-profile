@@ -50,13 +50,13 @@ app.use('*', async (c, next) => {
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="color-scheme" content="light dark" />
-          <link rel="stylesheet" href="/third-party/css/pico.classless.indigo.css" />
-          <link rel="stylesheet" href="/third-party/css/gridlex.css" />
+          <link rel="stylesheet" href="/third-party/css/pico.indigo.css" />
+          {/* <link rel="stylesheet" href="/third-party/css/gridlex.css" /> */}
           <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" defer></script>
           <script src="/dist/client/client.js" type="module"></script>
         </head>
         <body>
-          <main>
+          <main class="container">
             {content}
           </main>
         </body>

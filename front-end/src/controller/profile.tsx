@@ -35,6 +35,10 @@ profile.get('/',
             <>
 
                 <title>profile</title>
+                <div class="grid">
+                    <a href='/upload'>Upload file</a>
+                </div>
+                <hr/>
                 <form hx-post="/profile" hx-target="#output">
                     <fieldset>
                         <label for="version">Version</label>

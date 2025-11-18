@@ -9,7 +9,7 @@ import * as path from "node:path"
 import { pipeline } from 'node:stream/promises';
 // import { __CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS, __DEFAULT_MANIFEST_TEMPLATE, isCustomizationProfileManifest, type ICustomizationManifest } from '../model/manifest.js';
 // import { validator } from 'hono/validator';
-import { gitAdd, gitCommit, gitDiffNoPager, gitLog, gitPush } from '../model/git/cmd.js';
+import { gitAdd, gitCommit, gitDiffNoPager, gitLog, gitPush, gitRm } from '../model/git/cmd.js';
 
 const upload = new Hono()
     .use(authenticationMiddleware);
@@ -47,15 +47,25 @@ upload.on(['GET', 'POST'], '/',
 
         return c.render(
             <>
-                <h1>Upload:</h1>
-                <form method="post" id="upload-form" enctype="multipart/form-data" hx-swap="outerHTML" hx-confirm={`do you want to commit this file?`} hx-put="/upload/file" hx-target="#upload-file-output">
-                    <input hx-preserve id="upload-file" type="file" name="uploadFile" />
-                    <label for='filePath'>File Path:</label>
-                    <input hx-preserve id="file-path" type="text" name="filePath" placeholder='/' />
-                    <button  type="submit">upload this file</button>
-                    <progress id='progress' value='0' max='100'></progress>
-                </form>
-                <div id="upload-file-output"></div>
+                <div class="grid">
+                    <a href='/profile'>Profile</a>
+                    <button id="open-dialog-upload">Upload file</button>
+                    <button id="refresh-page">Refresh</button>
+                </div>
+                <dialog style={"flex-direction: column"}>
+                    <div style={"display: flex;justify-content: space-between;width: inherit;max-width: 800px;"}>
+                        <h4>Upload:</h4>
+                        <button id="close-dialog-upload">Close</button>
+                    </div>
+                    <form method="post" id="upload-form" enctype="multipart/form-data" hx-swap="outerHTML" hx-confirm={`do you want to commit this file?`} hx-put="/upload/file" hx-target="#upload-file-output">
+                        <input hx-preserve id="upload-file" type="file" name="uploadFile" />
+                        <label for='filePath'>File Path:</label>
+                        <input hx-preserve id="file-path" type="text" name="filePath" placeholder='/' />
+                        <button type="submit">upload this file</button>
+                        <progress id='progress' value='0' max='100'></progress>
+                    </form>
+                    <div id="upload-file-output"></div>
+                </dialog>
 
 
                 <hr></hr>
@@ -64,7 +74,7 @@ upload.on(['GET', 'POST'], '/',
                 <table aria-label="File list">
                     <thead>
                         <tr>
-                            <th>Directory</th>
+                            {/* <th>Directory</th> */}
                             <th>File Path</th>
                             <th>File Name</th>
                             {/* <th>Size</th> */}
@@ -74,24 +84,93 @@ upload.on(['GET', 'POST'], '/',
                     </thead>
                     <tbody>
                         {
-                            _files.map(([filePath, fileName, directory]) => {
+                            _files.filter(([,,dir]) => !dir).map(([filePath, fileName, _directory]) => {
 
-                                const filePathRelative = filePath.substring(c.var.gitDirectory.length);
-                                const filePathRelativeFull = filePathRelative + "/" + fileName;
+                                // TODO: find a better algorithm than +1 tricky hack
+                                const filePathRelative = filePath.substring(c.var.gitDirectory.length + 1);
+                                const filePathRelativeFull = filePathRelative ? path.join(filePathRelative, fileName) : fileName;
                                 return (
                                     <tr id={filePathRelativeFull}>
-                                        <td>{directory ? "Yes" : "No"}</td>
+                                        {/* <td>{directory ? "Yes" : "No"}</td> */}
                                         <td>{filePathRelative ? filePathRelative : "/"}</td>
                                         <td>{fileName}</td>
-                                        <td><button hx-confirm={`do you want to remove "${filePathRelativeFull}"?`} hx-delete={"/upload/delete?filename=" + encodeURI(filePathRelativeFull)}>X</button></td>
+                                        <td><button
+                                            hx-confirm={`do you want to remove "${filePathRelativeFull}"?`}
+                                            hx-delete={"/upload/delete?file=" + encodeURI(filePathRelativeFull)}
+                                            // hx-target={"#" + filePathRelativeFull}
+                                            hx-target="#remove-output"
+                                            >X</button></td>
                                     </tr>
                                 )
                             })
                         }
                     </tbody>
+                    <div id="remove-output"></div>
                 </table>
             </>
         );
+    });
+
+upload.delete('/delete',
+    gitMiddleware,
+    validator('query', async (value, c) => {
+
+        const file = value.file;
+        if (typeof file === "string") {
+            const filePathAbs = path.resolve(c.var.gitDirectory as string, file);
+            console.log(`Check if ${filePathAbs} exists`);
+            await fsp.access(filePathAbs, fs.constants.R_OK);
+
+            return filePathAbs;
+        }
+
+        return undefined;
+
+    }),
+    async (c) => {
+
+        const git = c.var.git;
+        console.log("GIT=", c.var.git);
+        console.log("GIT directory=", c.var.gitDirectory);
+        const filePath = c.req.valid('query');
+        if (!filePath) {
+            throw new Error("No FilePath found");
+        }
+
+        await fsp.unlink(filePath);
+
+        await gitRm(git, filePath);
+        const diff = await gitDiffNoPager(git);
+
+        if (!diff) {
+            return c.html(
+                <pre>no data change, nothing to commit</pre>
+            );
+        }
+
+        const commitMessage = await gitCommit(git, `add ${filePath}`);
+
+        const pushMessage = await gitPush(git, c.var.branchName);
+
+        const logs = await gitLog(git);
+
+        const res = `
+DIFF: "${diff}
+COMMIT: "${commitMessage}"
+PUSH: "${pushMessage}"
+LOGS: "${JSON.stringify(logs, null, 4)}"
+        `;
+
+        return c.html(
+            <>
+                <details open>
+                    <summary>DONE</summary>
+                    <pre>{res}</pre>
+                </details>
+            </>
+        );
+
+        return c.html(<></>);
     });
 
 
@@ -217,6 +296,7 @@ upload.post('/commit',
         const logs = await gitLog(git);
 
         const res = `
+DIFF: "${diff}
 COMMIT: "${commitMessage}"
 PUSH: "${pushMessage}"
 LOGS: "${JSON.stringify(logs, null, 4)}"
@@ -224,11 +304,13 @@ LOGS: "${JSON.stringify(logs, null, 4)}"
 
         return c.html(
             <>
-                <h1>DONE</h1>
-                <pre>{res}</pre>
+                <details open>
+                    <summary>DONE</summary>
+                    <pre>{res}</pre>
+                </details>
             </>
         )
     }
-)
+);
 
 export default upload;
