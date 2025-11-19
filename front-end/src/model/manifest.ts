@@ -119,18 +119,10 @@ export const customizationManifestJsonSchema = {
       "type": "string",
     },
     "title": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string",
-      },
-      "minProperties": 1,
+      "$ref": "#/definitions/ICustomizationManifestIStringMap",
     },
     "description": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string",
-      },
-      "minProperties": 1,
+      "$ref": "#/definitions/ICustomizationManifestIStringMap",
     },
     "theme": {
       "type": "object",
@@ -139,10 +131,10 @@ export const customizationManifestJsonSchema = {
           "type": "object",
           "properties": {
             "dark": {
-                "$ref": "#/definitions/ICustomizationManifestThemeColor",
+              "$ref": "#/definitions/ICustomizationManifestThemeColor",
             },
             "light": {
-                "$ref": "#/definitions/ICustomizationManifestThemeColor",
+              "$ref": "#/definitions/ICustomizationManifestThemeColor",
             },
           },
           "required": [
@@ -159,7 +151,44 @@ export const customizationManifestJsonSchema = {
       "type": "array",
       "items": {
         "type": "object",
-      },
+        "properties": {
+          "rel": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri-reference"
+          },
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "$ref": "#/definitions/ICustomizationManifestIStringMap",
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "authenticate": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string" },
+                  "href": { "type": "string", "format": "uri" }
+                },
+                "required": ["type", "href"]
+              },
+              "logo": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string" },
+                  "href": { "type": "string", "format": "uri-reference" }
+                },
+                "required": ["type", "href"]
+              }
+            },
+          }
+        },
+        "required": ["rel", "href"]
+      }
     },
     "publications": {
       "type": "array",
@@ -176,17 +205,33 @@ export const customizationManifestJsonSchema = {
           "href",
         ],
         "properties": {
+          "type": {
+            "type": "string"
+          },
           "rel": {
             "type": "string",
           },
           "href": {
             "type": "string",
+            "format": "uri-reference"
           },
         },
       },
     },
   },
   "definitions": {
+    "ICustomizationManifestIStringMap": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "IStringMap",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^([A-Za-z]{2})(-[A-Za-z]{2})?$"
+      },
+      "additionalProperties": {
+        "type": "string",
+      },
+      "minProperties": 1,
+    },
     "ICustomizationManifestThemeColor": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Theme color",
@@ -194,27 +239,35 @@ export const customizationManifestJsonSchema = {
       "properties": {
         "neutral": {
           "type": "string",
+          "pattern": "^#[0-9A-F]{6}$"
         },
         "primary": {
           "type": "string",
+          "pattern": "^#[0-9A-F]{6}$"
         },
         "secondary": {
           "type": "string",
+          "pattern": "^#[0-9A-F]{6}$"
         },
         "border": {
           "type": "string",
+          "pattern": "^#[0-9A-F]{6}$"
         },
         "background": {
           "type": "string",
+          "pattern": "^#[0-9A-F]{6}$"
         },
         "appName": {
           "type": "string",
+          "pattern": "^#[0-9A-F]{6}$"
         },
         "scrollbarThumb": {
           "type": "string",
+          "pattern": "^#[0-9A-F]{6}$"
         },
         "buttonsBorder": {
           "type": "string",
+          "pattern": "^#[0-9A-F]{6}$"
         },
       },
       "required": [

@@ -235,21 +235,21 @@ profile.get('/',
 
                     <fieldset>
                         <label htmlFor="links-input-hidden">Links</label>
-                        <textarea id="links-input-hidden" /*style="display: none" hidden*/>{JSON.stringify(manifest.links, null, 4)}</textarea>
+                        <textarea id="links-input-hidden" name="links" /*style="display: none" hidden*/>{JSON.stringify(manifest.links, null, 4)}</textarea>
                         <div id="links-root"></div>
                         <button type="button" id="links-add-button" hidden>Add link</button>
                     </fieldset>
 
                     <fieldset>
                         <label htmlFor="publications-input-hidden">Publications</label>
-                        <textarea id="publications-input-hidden" /*style="display: none" hidden*/>{JSON.stringify(manifest.publications, null, 4)}</textarea>
+                        <textarea id="publications-input-hidden" name="publications" /*style="display: none" hidden*/>{JSON.stringify(manifest.publications, null, 4)}</textarea>
                         <div id="publications-root"></div>
                         <button type="button" id="publications-add-button" hidden>Add link</button>
                     </fieldset>
 
                     <fieldset>
                         <label htmlFor="images-input-hidden">Images</label>
-                        <textarea id="images-input-hidden" /*style="display: none" hidden*/>{JSON.stringify(manifest.images, null, 4)}</textarea>
+                        <textarea id="images-input-hidden" name="images" /*style="display: none" hidden*/>{JSON.stringify(manifest.images, null, 4)}</textarea>
                         <div id="images-root"></div>
                         <button type="button" id="images-add-button" hidden>Add link</button>
                     </fieldset>
@@ -349,8 +349,19 @@ profile.post('/',
             newManifest.theme.color.light.buttonsBorder = value["color.light.buttonsBorder"] as string;
         }
 
-        console.log("generated manifest:");
-        console.log(newManifest);
+        if (value.links) {
+            newManifest.links = JSON.parse(value.links as string);
+        }
+
+        if (value.publications) {
+            newManifest.publications = JSON.parse(value.publications as string);
+        }
+
+        if (value.images) {
+            newManifest.images = JSON.parse(value.images as string);
+        }
+
+        console.log("generated manifest:", newManifest);
 
         if (!isCustomizationProfileManifest(newManifest)) {
             return [__CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS, undefined];
@@ -372,7 +383,6 @@ profile.post('/',
 
         if (manifest) {
 
-            console.log("manifest received", manifest);
             console.log("GIT COMMIT MANIFEST");
 
             return c.html(
