@@ -278,7 +278,7 @@ export const __DEFAULT_MANIFEST_TEMPLATE: ICustomizationManifest= {
         "background": "#000000",
         "appName": "#000000",
         "scrollbarThumb": "#000000",
-        "buttonsBorder": "000000",
+        "buttonsBorder": "#000000",
       }
     }
   },

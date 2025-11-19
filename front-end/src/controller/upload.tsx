@@ -47,6 +47,7 @@ upload.on(['GET', 'POST'], '/',
 
         return c.render(
             <>
+                <script src='/dist/client/upload.js'></script>
                 <div class="grid">
                     <a href='/profile'>Profile</a>
                     <button id="open-dialog-upload">Upload file</button>
