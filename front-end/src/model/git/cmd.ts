@@ -80,7 +80,7 @@ export const gitDiffNoPager = async (git: SimpleGit) => {
 
 export const gitCommit = async (git: SimpleGit, message: string) => {
 
-    const commit = await git.raw("commit", "-m", message);
+    const commit = await git.commit(message);
     console.log("GIT commit", commit);
     return commit;
 }

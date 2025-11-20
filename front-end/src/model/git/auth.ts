@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
 import type { JsonArray } from "../manifest.js";
+import type { IAuthentication } from "../cookie.js";
 
 // https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys#set-up-installation-access-tokens
 // https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app
 // https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-an-organization-installation-for-the-authenticated-app
-export const githubAppAuthentication = async (githubAppId: string, clientId: string, privateKey: string) => {
+const githubAppAuthentication = async (githubAppId: string, clientId: string, privateKey: string) => {
     console.log("Get Access Token From the Github App");
 
     console.log("Generating JWT...");
@@ -81,4 +82,19 @@ export const githubAppAuthentication = async (githubAppId: string, clientId: str
         expiresAt,
     }
 
+}
+
+
+export const githubAuthentication = async () => {
+
+    const privateKey = process.env.__GITHUB_APP_PRIVATE_KEY;
+    if (!privateKey) {
+        throw new Error("No Private Key!");
+    }
+
+    const { accessToken, expiresAt } = await githubAppAuthentication("2266048", "Iv23liRWL5nzrIEuBv5U", privateKey);
+    if (!accessToken) {
+        throw new Error("No Access-Token generated");
+    }
+    return { accessToken, expiresAt };
 }

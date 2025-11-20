@@ -157,7 +157,7 @@ upload.delete('/delete',
 
         const res = `
 DIFF: "${diff}
-COMMIT: "${commitMessage}"
+COMMIT: "${JSON.stringify(commitMessage, null, 4)}"
 PUSH: "${pushMessage}"
 LOGS: "${JSON.stringify(logs, null, 4)}"
         `;
@@ -298,7 +298,7 @@ upload.post('/commit',
 
         const res = `
 DIFF: "${diff}
-COMMIT: "${commitMessage}"
+COMMIT: "${JSON.stringify(commitMessage, null, 4)}"
 PUSH: "${pushMessage}"
 LOGS: "${JSON.stringify(logs, null, 4)}"
         `;

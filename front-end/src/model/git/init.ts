@@ -1,4 +1,4 @@
-import { githubAppAuthentication } from './auth.js';
+import { githubAuthentication } from './auth.js';
 import type { SimpleGit } from "simple-git";
 import * as path from "node:path";
 import * as fsp from "node:fs/promises";
@@ -95,16 +95,6 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
         }
     }
 
-    let githubAppAuthenticationDone = false;
-    const githubAuthentication = async () => {
-        const { accessToken, expiresAt } = await githubAppAuthentication("2266048", "Iv23liRWL5nzrIEuBv5U", privateKey);
-        if (!accessToken) {
-            throw new Error("No Access-Token generated");
-        }
-        githubAppAuthenticationDone = true;
-        return { accessToken, expiresAt } ;
-    }
-
     const git = gitInstance(gitbaseDir);
     if (empty) {
         const githubAuthResult = await githubAuthentication();
@@ -167,9 +157,9 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
     } catch (e) {
         console.error(`exception error with the git remote to access it, error=${String(e)}`);
 
-        if (githubAppAuthenticationDone) {
-            throw new Error("GithubApp Authentication already done but no git remote access");
-        }
+        // if (githubAppAuthenticationDone) {
+        //     throw new Error("GithubApp Authentication already done but no git remote access");
+        // }
         const githubAuthResult = await githubAuthentication();
         const accessToken = githubAuthResult.accessToken;
         expiresAt = githubAuthResult.expiresAt;

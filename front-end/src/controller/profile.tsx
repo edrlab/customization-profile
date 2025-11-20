@@ -484,14 +484,14 @@ profile.post('/commit',
         console.log("GIT directory=", c.var.gitDirectory);
         console.log("GIT branchName=", c.var.branchName);
 
-        const commitMessage = await gitCommit(git, "update manifest.json");
+        const commit = await gitCommit(git, "update manifest.json");
 
         const pushMessage = await gitPush(git, c.var.branchName);
 
         const logs = await gitLog(git);
 
         const res = `
-COMMIT: "${commitMessage}"
+COMMIT: "${JSON.stringify(commit)}"
 PUSH: "${pushMessage}"
 LOGS: "${JSON.stringify(logs, null, 4)}"
         `;
@@ -500,6 +500,7 @@ LOGS: "${JSON.stringify(logs, null, 4)}"
             <>
                 <h1>DONE</h1>
                 <pre>{res}</pre>
+                <div id="commit-action-status" hx-get={`/status?hash=${commit.commit}`} hx-target="#commit-action-status" hx-trigger="every 3s"></div>
             </>
         )
     }

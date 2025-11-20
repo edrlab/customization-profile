@@ -19,6 +19,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import login from './controller/login.js'
 import profile from './controller/profile.js'
 import upload from './controller/upload.js';
+import status_ from './controller/status.js';
 // import { Layout } from './view/layout.js';
 
 const app = new Hono()
@@ -68,6 +69,7 @@ app.use('*', async (c, next) => {
 app.route('/login', login);
 app.route('/profile', profile);
 app.route('/upload', upload);
+app.route('/status', status_);
 
 app.get("/health", (c) => {
   return c.html("ok");
