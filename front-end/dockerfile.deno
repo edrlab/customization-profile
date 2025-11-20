@@ -32,7 +32,7 @@ RUN set -xe; \
 which git && echo OK || echo KO; \
 which deno && echo OK || echo KO; \
 which node && echo OK || echo KO; \
-deno install && deno run build:container; \
+deno install && deno run lint && deno run build:container; \
 chmod +x /entrypoint.sh; 
 
 EXPOSE ${PORT}

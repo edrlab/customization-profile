@@ -7,6 +7,9 @@ export interface IAuthentication {
     timestamp: number;
     counter: number;
     lastConnectionTime: number;
-    sessionId: string;
+}
+
+export interface ISession {
+    session: string;
     expiresAt: string;
 }

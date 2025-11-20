@@ -11,7 +11,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 RUN set -xe; \
 which git && echo OK || echo KO; \
-npm install && npm run build:container; \
+npm install && npm run lint && npm run build:container;\
 chmod +x /entrypoint.sh; 
 
 EXPOSE ${PORT}

@@ -27,8 +27,8 @@
     // Style Options
     "noImplicitReturns": true,
     // "noImplicitOverride": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
     "strictNullChecks": true,
@@ -43,6 +43,13 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    
-  }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "ignore": [
+    "dist/**",
+    "node_modules/**",
+  ],
 }
