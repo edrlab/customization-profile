@@ -30,6 +30,10 @@ export const getGithubActionRunStatus = (actionsRunsData: any, commitHashId: str
     // eslint-disable-next-line
     const run = actionsRunsData.workflow_runs.find(({head_commit: {id}}: any) => id === commitHashId);
     console.log("GithubAction run:", run);
+    
+    if (!run) {
+        throw new Error("run not found");
+    }
 
     return {
         status: run.status,

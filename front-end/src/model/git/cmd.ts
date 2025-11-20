@@ -50,6 +50,7 @@ export const gitListRemote = async(git: SimpleGit) => {
 export const gitRemoteShowOrigin = async (git: SimpleGit) => {
     const origin = await git.remote(["show", "origin"]);
     console.log("GIT remote show origin", origin);
+    return origin;
 }
 
 export const gitShowRefBranch = async (git: SimpleGit, branch: string) => {

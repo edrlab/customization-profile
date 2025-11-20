@@ -120,6 +120,7 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
                 throw new Error(`directory=${sessionId} not found after git cloning`);
             }
         } catch (e) {
+            console.error(e);
             throw new Error("Critical error with the FileSystem, the git volume cannot be read")
         }
     } else {
@@ -170,12 +171,14 @@ export const gitInit = async (auth: IAuthentication, sessionId: string, expiresA
             await gitListRemote(git);
             await gitRemoteShowOrigin(git);
         } catch (e) {
+            console.error(e);
             throw new Error(`Cannot update the git remote Error:${String(e)}`);
         }
         try {
             console.log("Check git remote access (2)");
             await gitPull(git, branchName);
         } catch (e) {
+            console.error(e);
             throw new Error(`Critical error with the git remote access`);
         }
     }

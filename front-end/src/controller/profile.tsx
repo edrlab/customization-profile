@@ -466,7 +466,10 @@ profile.post('/check',
 
         return c.html(
             <>
-                <pre>{diff}</pre>
+                <details open>
+                    <summary>DIFF</summary>
+                    <pre>{diff}</pre>
+                </details>
                 <button hx-post="/profile/commit" hx-target="#output-commit">commit</button>
                 <div id="output-commit"></div>
 
@@ -498,9 +501,11 @@ LOGS: "${JSON.stringify(logs, null, 4)}"
 
         return c.html(
             <>
-                <h1>DONE</h1>
-                <pre>{res}</pre>
-                <div id="commit-action-status" hx-get={`/status?hash=${commit.commit}`} hx-target="#commit-action-status" hx-trigger="every 3s"></div>
+                <details open>
+                    <summary>DONE</summary>
+                    <pre>{res}</pre>
+                </details>
+                <div id="commit-action-status" hx-get={`/status?hash=${commit.commit}`} hx-target="#commit-action-status" hx-trigger="load, delay 5s, every 5s"></div>
             </>
         )
     }
