@@ -165,6 +165,10 @@ export const customizationManifestJsonSchema = {
           "title": {
             "$ref": "#/definitions/ICustomizationManifestIStringMap",
           },
+          "language": {
+            "type": "string",
+            "pattern": "^([A-Za-z]{2})(-[A-Za-z]{2})?$"
+          },
           "properties": {
             "type": "object",
             "properties": {
@@ -194,32 +198,62 @@ export const customizationManifestJsonSchema = {
       "type": "array",
       "items": {
         "type": "object",
+        "required": [
+          "metadata",
+          "links",
+          "images",
+        ],
+        "properties": {
+          "metadata": {
+            "type": "object",
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ICustomizationManifestReducedLinks"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ICustomizationManifestReducedLinks"
+            }
+          }
+        }
       },
     },
     "images": {
       "type": "array",
       "items": {
-        "type": "object",
-        "required": [
-          "rel",
-          "href",
-        ],
-        "properties": {
-          "type": {
-            "type": "string"
-          },
-          "rel": {
-            "type": "string",
-          },
-          "href": {
-            "type": "string",
-            "format": "uri-reference"
-          },
-        },
+        "$ref": "#/definitions/ICustomizationManifestReducedLinks"
       },
     },
   },
   "definitions": {
+    "ICustomizationManifestReducedLinks": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Links",
+      "type": "object",
+      "properties": {
+        "rel": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "type": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^([A-Za-z]{2})(-[A-Za-z]{2})?$"
+        }
+      },
+      "required": [
+        "href",
+      ],
+    },
     "ICustomizationManifestIStringMap": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "IStringMap",
