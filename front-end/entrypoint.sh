@@ -23,8 +23,8 @@ set -xe
 #  not authenticated with the github deploy-key
 #     ssh -T -p 443 git@ssh.github.com
 
-#     git config --local user.email "dev.edrlab@gmail.com"
-#     git config --local user.name "dev.edrlab"
+git config --local user.email "dev.edrlab@gmail.com"
+git config --local user.name "dev.edrlab"
 
 # fi
 
