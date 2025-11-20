@@ -12,6 +12,7 @@ COPY tsconfig.json .
 COPY third-party third-party/
 COPY scripts scripts/
 COPY entrypoint.sh /entrypoint.sh
+COPY eslint.config.mjs .
 
 RUN set -x; \
 echo $CONTAINER_TIMEZONE && \
