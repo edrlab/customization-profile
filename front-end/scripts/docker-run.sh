@@ -9,4 +9,4 @@ docker run --rm \
     -e __GITHUB_APP_PRIVATE_KEY="$__GITHUB_APP_PRIVATE_KEY" \
     -p 8080:8080 \
     --mount type=volume,src=git-volume,dst=/git-volume \
-    europe-west1-docker.pkg.dev/customization-profile/cloud-run-front-end-build/front-end-node:0.0.0.test
+    europe-west1-docker.pkg.dev/customization-profile/cloud-run-front-end-build/front-end-bun:0.0.0.test
