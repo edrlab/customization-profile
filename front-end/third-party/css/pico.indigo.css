@@ -2366,6 +2366,9 @@ dialog {
   backdrop-filter: var(--pico-modal-overlay-backdrop-filter);
   background-color: var(--pico-modal-overlay-background-color);
   color: var(--pico-color);
+  
+
+  overflow: auto;
 }
 dialog > article {
   width: 100%;
