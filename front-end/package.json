@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "postbuild": "node scripts/preprocessor.js -D__NODE__ -D__DEV__ dist/index.js",
-    "build": "tsc",
+    "build": "tsc && tsc -p tsconfig-client.json",
     "build:container": "tsc && node scripts/preprocessor.js -D__NODE__ -D__BUILD__ dist/index.js",
     "validate_secrets": "sh ./scripts/validate_secrets_json.sh",
     "start": "node dist/index.js",
@@ -24,16 +24,20 @@
     "hono": "^4.10.4",
     "jsonwebtoken": "^9.0.2",
     "nanoid": "^5.1.6",
+    "react": "^19.2.0",
     "simple-git": "^3.30.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.0",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "cpy-cli": "^6.0.0",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "make-dir-cli": "^4.0.0",
+    "react-dom": "^19.2.0",
     "rimraf": "^6.1.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4"

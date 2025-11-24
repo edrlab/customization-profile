@@ -34,6 +34,7 @@ profile.get('/',
         return c.render(
             <>
                 <script src='/dist/client/profile.js'></script>
+                <script src="/dist/client/hello.js" type="module"></script>
                 {/* <script src='/node_modules/lit-html/lit-html.js'></script> */}
                 <title>profile</title>
                 <div class="grid">
@@ -60,6 +61,7 @@ profile.get('/',
                             aria-invalid={undefined}
                         >{JSON.stringify(manifest.title, null, 4)}</textarea>
                     </fieldset>
+                    <div id="__title_react_root_node"></div>
 
                     <fieldset>
                         <label for="description">Description</label>
@@ -69,6 +71,7 @@ profile.get('/',
                             aria-invalid={undefined}
                             >{JSON.stringify(manifest.description, null, 4)}</textarea>
                     </fieldset>
+                    <div id="__desc_react_root_node"></div>
 
                     {/* DARK THEME */}
                     <fieldset>

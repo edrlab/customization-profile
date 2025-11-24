@@ -20,6 +20,7 @@ import login from './controller/login.js'
 import profile from './controller/profile.js'
 import upload from './controller/upload.js';
 import status_ from './controller/status.js';
+import { html } from 'hono/html';
 // import { Layout } from './view/layout.js';
 
 const app = new Hono()
@@ -43,6 +44,26 @@ app.use('/dist/client/**/*', serveStatic({
   }
 }));
 
+// app.use('/node_modules/react/**/*', serveStatic({
+//   root: "./",
+//   // onNotFound((path) => {
+//   //   console.log("NOT FOUND", path);
+//   // }),
+//   onNotFound: (path) => {
+//     console.log("[NOT FOUND PATH=]", path);
+//   }
+// }));
+
+app.use('/src/client/**/*.tsx', serveStatic({
+  root: "./",
+  // onNotFound((path) => {
+  //   console.log("NOT FOUND", path);
+  // }),
+  onNotFound: (path) => {
+    console.log("[NOT FOUND PATH=]", path);
+  }
+}));
+
 app.use('*', async (c, next) => {
   c.setRenderer((content) => {
     return c.html(
@@ -53,6 +74,17 @@ app.use('*', async (c, next) => {
           <meta name="color-scheme" content="light dark" />
           <link rel="stylesheet" href="/third-party/css/pico.indigo.css" />
           {/* <link rel="stylesheet" href="/third-party/css/gridlex.css" /> */}
+          {
+            html`<script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@19.2.0?dev",
+      "react-dom/client": "https://esm.sh/react-dom@19.2.0/client?dev",
+      "react/jsx-runtime": "https://esm.sh/react@19.2.0/jsx-runtime?dev"
+    }
+  }
+</script>`
+          }
           <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" defer></script>
           <script src="/dist/client/client.js" type="module"></script>
         </head>
