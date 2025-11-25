@@ -59,9 +59,10 @@ profile.get('/',
                             id="title"
                             name="title"
                             aria-invalid={undefined}
+                            hidden
                         >{JSON.stringify(manifest.title, null, 4)}</textarea>
+                        <div id="__title_react_root_node"></div>
                     </fieldset>
-                    <div id="__title_react_root_node"></div>
 
                     <fieldset>
                         <label for="description">Description</label>

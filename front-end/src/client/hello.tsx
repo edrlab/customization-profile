@@ -76,9 +76,9 @@ export const Hello = (props: { id: string }) => {
                     }}
                 >
                     <div className="input-container" style={{ width: "120px" }}>
-                        <label htmlFor={`lang-${entry.id}`}>Lang</label>
+                        <label htmlFor={`_react_${props.id}_lang-${entry.id}`}>Lang</label>
                         <input
-                            name={`lang-${entry.id}`}
+                            name={`_react_${props.id}_lang-${entry.id}`}
                             placeholder="en"
                             style={{ margin: "0" }}
                             value={entry.lang}
@@ -86,15 +86,15 @@ export const Hello = (props: { id: string }) => {
                         />
                     </div>
                     <div className="input-container" style={{ width: "100%" }}>
-                        <label htmlFor={`title-${entry.id}`}>{props.id}</label>
+                        <label htmlFor={`_react_${props.id}_title-${entry.id}`}>{props.id}</label>
                         <input
-                            name={`title-${entry.id}`}
+                            name={`_react_${props.id}_title-${entry.id}`}
                             style={{ margin: "0" }}
                             value={entry.content}
                             onChange={(e) => handleChange(entry.id, 'content', e.target.value)}
                         />
                     </div>
-                    {entry.id > 1 ?
+                    {entry.id ?
                         <button
                             onClick={() => handleRemoveEntry(entry.id)}
                             style={{ padding: "10px", cursor: "pointer" }}
