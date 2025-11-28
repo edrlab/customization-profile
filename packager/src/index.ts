@@ -1,12 +1,12 @@
 
 import { Ajv } from "ajv";
 import addFormats from "ajv-formats"
-import type manifestType = require("./manifest.type");
+import type profileManifest = require("./profileManifest.type.js");
 import { customizationProfileManifestSchema } from "./profile.schema.js";
 import * as fs from "node:fs";
 
 let __CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS = "";
-function isCustomizationProfileManifest(data: any): data is manifestType.ICustomizationManifest {
+function isCustomizationProfileManifest(data: any): data is profileManifest.IProfileManifest {
 
     const ajv = new Ajv();
     addFormats.default(ajv);
