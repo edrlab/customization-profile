@@ -1,0 +1,32 @@
+{
+    "version": 1,
+    "identifier": "thorium-manifest://org.edrlab.thorium.test",
+    "created": "2025-11-27T09:37:37Z",
+    "modified": "2025-11-28T10:37:37Z",
+    "title":  "thorium test customization profile",
+    "description": "thorium test profile",
+    "theme": {
+        "color": {
+            "dark": {
+                "neutral": "",
+                "primary": "",
+                "secondary": "",
+                "border": "",
+                "background": "",
+                "appName": "",
+                "scrollbarThumb": "",
+                "buttonsBorder": ""
+            },
+            "light": {
+                "neutral": "",
+                "primary": "",
+                "secondary": "",
+                "border": "",
+                "background": "",
+                "appName": "",
+                "scrollbarThumb": "",
+                "buttonsBorder": ""
+            }
+        }
+    }
+}
