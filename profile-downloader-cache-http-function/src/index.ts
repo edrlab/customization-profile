@@ -1,18 +1,17 @@
 import { http } from '@google-cloud/functions-framework';
 // const {ArtifactRegistryClient} = require('@google-cloud/artifact-registry').v1;
 import * as artifact from "@google-cloud/artifact-registry";
-import * as semver from "semver";
 const { ArtifactRegistryClient } = artifact.v1;
 interface IArtifact {
-  project: string | undefined;
-  location: string | undefined;
-  repository: string | undefined;
-  fileIdentifierRaw: string | undefined;
+  project: string;
+  location: string;
+  repository: string;
+  fileIdentifierRaw: string;
   file: {
-    filename: string | undefined;
-    version: string | undefined;
-    artifact: string | undefined;
-  } | undefined;
+    filename?: string;
+    version: number;
+    artifact?: string;
+  };
 };
 
 http('profile-downloader-cache-http-function', async (req, res) => {
@@ -61,23 +60,28 @@ http('profile-downloader-cache-http-function', async (req, res) => {
 
         if (match) {
           const fileIdentifierRaw = match[4];
-          const result: IArtifact = {
-            project: match[1],
-            location: match[2],
-            repository: match[3],
-            fileIdentifierRaw: fileIdentifierRaw,
-            file: undefined,
-          };
-
           if (fileIdentifierRaw) {
             const fileMatch = fileIdentifierRaw.match(/([^:]+):([^:]+):(.+)/);
-
             if (fileMatch) {
 
-              result.file = {
-                filename: fileMatch[1],
-                version: fileMatch[2],
-                artifact: fileMatch[3],
+              const result: IArtifact = {
+                project: typeof match[1] === "string" ? match[1] : "",
+                location: typeof match[2] === "string" ? match[2] : "",
+                repository: typeof match[3] === "string" ? match[3] : "",
+                fileIdentifierRaw: fileIdentifierRaw,
+                file: {
+                  filename: typeof fileMatch[1] === "string" ? fileMatch[1]: "",
+                  version: typeof fileMatch[2] === "number" ? (new Date(fileMatch[2] as string)).getTime() : 0,
+                  artifact: typeof fileMatch[3] === "string" ? fileMatch[3] : "",
+                }
+              }
+
+              console.log("ArtifactNameParsingResutl=", JSON.stringify(result));
+              if (!artifactLatest || result.file.version > artifactLatest.file.version) {
+                artifactLatest = result;
+                console.log(`Set (${fileIdentifierRaw}) as the latest artifact`);
+              } else {
+                console.log("not a valid or latest artifiact file=", fileIdentifierRaw);
               }
             } else {
               console.error("fileIdentifier match not found", fileIdentifierRaw);
@@ -85,20 +89,9 @@ http('profile-downloader-cache-http-function', async (req, res) => {
           } else {
             console.error("NoFileIdentifierFound from the artifactName", name);
           }
-          console.log("ArtifactNameParsingResutl=", JSON.stringify(result));
-
-          // if (!artifactLatest || (result.file?.version && semver.gt(artifactLatest.file?.version as string, result.file?.version))) { // test purpose only reverse of the below greater than
-          if (!artifactLatest || (result.file?.version && semver.gt(result.file?.version, artifactLatest.file?.version as string))) {
-            artifactLatest = result;
-            console.log(`Set (${fileIdentifierRaw}) as the latest artifact`);
-          } else {
-            console.log("not a valid or latest artifiact file=", fileIdentifierRaw);
-          }
         } else {
           console.error("name parsing error name=", name);
         }
-
-
       }
     }
   }
@@ -111,7 +104,9 @@ http('profile-downloader-cache-http-function', async (req, res) => {
 
       const IfNoneMatchVersion = req.header("If-None-Match")?.replaceAll("\"", "");
       console.log("IfNoneMatchVersion=", IfNoneMatchVersion);
-      if (IfNoneMatchVersion && /^(\d+)\.(\d+)\.(\d+)$/.test(IfNoneMatchVersion) && IfNoneMatchVersion === artifactLatest.file.version) {
+      const IfNoneMatchVersionTimestamp = IfNoneMatchVersion ? (new Date(IfNoneMatchVersion)).getTime() : undefined; // undefined or NaN returns by newDate
+      console.log("IfNoneMatchVersionConvertedTimestamp=", IfNoneMatchVersionTimestamp)
+      if (IfNoneMatchVersionTimestamp && IfNoneMatchVersionTimestamp === artifactLatest.file.version) {
         res.statusCode = 304;
         console.log("IfNotMatch failed, send status 304 not modified");
       } else {
@@ -125,8 +120,8 @@ http('profile-downloader-cache-http-function', async (req, res) => {
       }
 
     } else {
-      console.error("latest artifact release not found, send error 500");
-      res.statusCode = 500;
+      console.error("latest artifact release not found, send error 404");
+      res.statusCode = 404;
     }
   } catch (e) {
     console.error(e);

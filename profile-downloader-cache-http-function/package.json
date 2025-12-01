@@ -6,12 +6,10 @@
   "main": "dist/index.js",
   "type": "module",
   "devDependencies": {
-    "@types/semver": "^7.7.1",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@google-cloud/artifact-registry": "^4.3.1",
-    "@google-cloud/functions-framework": "^4.0.0",
-    "semver": "^7.7.3"
+    "@google-cloud/functions-framework": "^4.0.0"
   }
 }
