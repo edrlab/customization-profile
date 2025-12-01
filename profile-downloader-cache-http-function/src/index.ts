@@ -61,7 +61,7 @@ http('profile-downloader-cache-http-function', async (req, res) => {
         if (match) {
           const fileIdentifierRaw = match[4];
           if (fileIdentifierRaw) {
-            const fileMatch = fileIdentifierRaw.match(/([^:]+):([^:]+):(.+)/);
+            const fileMatch = fileIdentifierRaw.match(/^(.*?):(.*):([^:]*)$/);
             if (fileMatch) {
 
               const result: IArtifact = {
@@ -71,7 +71,7 @@ http('profile-downloader-cache-http-function', async (req, res) => {
                 fileIdentifierRaw: fileIdentifierRaw,
                 file: {
                   filename: typeof fileMatch[1] === "string" ? fileMatch[1]: "",
-                  version: typeof fileMatch[2] === "number" ? (new Date(fileMatch[2] as string)).getTime() : 0,
+                  version: typeof fileMatch[2] === "string" ? (new Date(fileMatch[2] as string)).getTime() : 0,
                   artifact: typeof fileMatch[3] === "string" ? fileMatch[3] : "",
                 }
               }
@@ -100,7 +100,7 @@ http('profile-downloader-cache-http-function', async (req, res) => {
     await callListFiles();
 
     if (artifactLatest && artifactLatest.project && artifactLatest.location && artifactLatest.repository && artifactLatest.fileIdentifierRaw && artifactLatest.file?.version) {
-      res.setHeader("ETag", artifactLatest.file.version);
+      res.setHeader("ETag", (new Date(artifactLatest.file.version)).toISOString());
 
       const IfNoneMatchVersion = req.header("If-None-Match")?.replaceAll("\"", "");
       console.log("IfNoneMatchVersion=", IfNoneMatchVersion);
