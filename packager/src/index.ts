@@ -1,39 +1,28 @@
-
-import { Ajv } from "ajv";
-import addFormats from "ajv-formats"
-import type profileManifest = require("./profileManifest.type.js");
-import { customizationProfileManifestSchema } from "./profile.schema.js";
 import * as fs from "node:fs";
-
-let __CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS = "";
-function isCustomizationProfileManifest(data: any): data is profileManifest.IProfileManifest {
-
-    const ajv = new Ajv();
-    addFormats.default(ajv);
-
-    const valid = ajv.validate(customizationProfileManifestSchema, data);
-
-    __CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS = ajv.errors?.length ? JSON.stringify(ajv.errors, null, 2) : "";
-
-    return valid;
-}
+import * as path from "node:path";
+// import { __CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS, isCustomizationProfileManifest } from "./validation.js";
 
 const main = () => {
 
-    const manifestPath = process.argv[2];
-    if (!manifestPath) {
+    const packagePath = process.argv[2];
+    if (!packagePath) {
         process.stderr.write("No package directory path, exit\n");
         process.exit(1);
     }
 
+    if (!fs.existsSync(packagePath)) {
+        process.stderr.write("No package directory found, exit\n");
+    }
+
+
+    const manifestPath = path.resolve(packagePath, "manifest.json");
     const manifestStr = fs.readFileSync(manifestPath, "utf-8");
     const manifest = JSON.parse(manifestStr);
+    
 
-    console.log("IsManifest: ", isCustomizationProfileManifest(manifest));
-    console.log(__CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS);
+    console.log("manifest: ", JSON.stringify(manifest, null, 4));
 };
 
 if (import.meta?.main) {
     main();
 }
-

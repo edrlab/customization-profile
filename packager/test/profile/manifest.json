@@ -8,24 +8,24 @@
     "theme": {
         "color": {
             "dark": {
-                "neutral": "",
-                "primary": "",
-                "secondary": "",
-                "border": "",
-                "background": "",
-                "appName": "",
-                "scrollbarThumb": "",
-                "buttonsBorder": ""
+                "neutral": "#000000",
+                "primary": "#000000",
+                "secondary": "#000000",
+                "border": "#000000",
+                "background": "#000000",
+                "appName": "#000000",
+                "scrollbarThumb": "#000000",
+                "buttonsBorder": "#000000"
             },
             "light": {
-                "neutral": "",
-                "primary": "",
-                "secondary": "",
-                "border": "",
-                "background": "",
-                "appName": "",
-                "scrollbarThumb": "",
-                "buttonsBorder": ""
+                "neutral": "#000000",
+                "primary": "#000000",
+                "secondary": "#000000",
+                "border": "#000000",
+                "background": "#000000",
+                "appName": "#000000",
+                "scrollbarThumb": "#000000",
+                "buttonsBorder": "#000000"
             }
         }
     }
