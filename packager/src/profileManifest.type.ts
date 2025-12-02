@@ -80,7 +80,7 @@ export interface IProfileManifest {
     /**
      * package manifest signature
      */
-    signature: IProfileManifestSignature;
+    signature: IProfileManifestSignature | undefined;
 }
 
 export interface IProfileManifestTheme {
