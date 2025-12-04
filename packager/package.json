@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "schema": "node scripts/generate-profile-schema.js",
     "build": "tsc",
     "cli": "node dist/index.js"
   },
