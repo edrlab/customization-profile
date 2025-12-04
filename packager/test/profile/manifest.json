@@ -28,5 +28,13 @@
                 "buttonsBorder": "#000000"
             }
         }
-    }
+    },
+    "links": [
+        {
+            "rel": "screen",
+            "href": "./welcome.html",
+            "type": "text/html",
+            "title": "welcome"
+        }
+    ]
 }
