@@ -8,13 +8,13 @@ import type { IAuthentication } from '../cookie.js';
 
 import * as secrets from "../../secrets.json" with { type: "json" };
 
-export const gitInit = async (auth: IAuthentication, sessionId: string, expiresAt: string): Promise<{ git: SimpleGit, expiresAt: string, gitbaseDir: string, branchName: string }> => {
+export const gitInit = async (auth: IAuthentication, sessionId: string, expiresAt: string, mode: "dev"|"prod" = "dev"): Promise<{ git: SimpleGit, expiresAt: string, gitbaseDir: string, branchName: string }> => {
 
     const user = secrets.default.users.find(({ id }) => auth.id === id);
     if (!user) {
         throw new Error("No User Found !");
     }
-    const branchName = `_group/${user.group}/profile/${user.profile}/dev`;
+    const branchName = `group--${user.group}--profile--${user.profile}--${mode}`;
 
     if (!sessionId) {
         throw new Error("No cookie sessionId !");

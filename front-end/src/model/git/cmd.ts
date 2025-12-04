@@ -19,7 +19,7 @@ export const gitPull = async (git: SimpleGit, branch: string) => {
 
 export const gitClone = async (git: SimpleGit, accessToken: string, gitbaseDir: string, branch: string) => {
 
-    const clone = await git.raw("clone", "--depth", "1", "--single-branch", "-b", branch, `https://x-access-token:${accessToken}@github.com/panaC/customization-profile-data.git`, gitbaseDir);
+    const clone = await git.raw("clone", "--depth", "1", "--single-branch", "-b", branch, `https://x-access-token:${accessToken}@github.com/edrlab/customization-profile-data.git`, gitbaseDir);
     console.log("GIT clone=", clone);
 }
 

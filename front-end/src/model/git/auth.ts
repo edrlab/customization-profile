@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import type { JsonArray } from "../manifest.js";
-import type { IAuthentication } from "../cookie.js";
 
 // https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys#set-up-installation-access-tokens
 // https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app
@@ -92,7 +91,7 @@ export const githubAuthentication = async () => {
         throw new Error("No Private Key!");
     }
 
-    const { accessToken, expiresAt } = await githubAppAuthentication("2266048", "Iv23liRWL5nzrIEuBv5U", privateKey);
+    const { accessToken, expiresAt } = await githubAppAuthentication("2352918", "Iv23lihrgHNIgzNbjRso", privateKey);
     if (!accessToken) {
         throw new Error("No Access-Token generated");
     }
