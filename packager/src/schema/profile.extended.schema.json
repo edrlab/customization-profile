@@ -1,0 +1,1195 @@
+[
+    {
+        "$id": "https://www.notion.so/Thorium-Reader-Profiles-1d8a1ca5712f80619738c2f26e700355",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Thorium Profile Manifest Json Schema",
+        "type": "object",
+        "required": [
+            "version",
+            "identifier",
+            "created",
+            "title",
+            "description",
+            "theme"
+        ],
+        "properties": {
+            "version": {
+                "type": "integer"
+            },
+            "identifier": {
+                "type": "string",
+                "format": "uri"
+            },
+            "created": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "modified": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "contentHash": {
+                "type": "string"
+            },
+            "title": {
+                "$ref": "https://readium.org/webpub-manifest/schema/language-map.schema.json"
+            },
+            "description": {
+                "$ref": "https://readium.org/webpub-manifest/schema/language-map.schema.json"
+            },
+            "theme": {
+                "type": "object",
+                "properties": {
+                    "color": {
+                        "type": "object",
+                        "properties": {
+                            "dark": {
+                                "$ref": "#/definitions/ICustomizationManifestThemeColor"
+                            },
+                            "light": {
+                                "$ref": "#/definitions/ICustomizationManifestThemeColor"
+                            }
+                        },
+                        "required": [
+                            "dark",
+                            "light"
+                        ]
+                    }
+                },
+                "required": [
+                    "color"
+                ]
+            },
+            "links": {
+                "type": "array",
+                "items": {
+                    "$ref": "https://readium.org/webpub-manifest/schema/link.schema.json"
+                }
+            },
+            "publications": {
+                "type": "array",
+                "items": {
+                    "$ref": "https://drafts.opds.io/schema/publication.schema.json"
+                }
+            },
+            "images": {
+                "type": "array",
+                "items": {
+                    "$ref": "https://readium.org/webpub-manifest/schema/link.schema.json"
+                }
+            }
+        },
+        "definitions": {
+            "CSSHEXColor": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "CSS HEX-Color",
+                "type": "string",
+                "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+            },
+            "ICustomizationManifestThemeColor": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "Theme color",
+                "type": "object",
+                "properties": {
+                    "neutral": {
+                        "$ref": "#/definitions/CSSHEXColor"
+                    },
+                    "primary": {
+                        "$ref": "#/definitions/CSSHEXColor"
+                    },
+                    "secondary": {
+                        "$ref": "#/definitions/CSSHEXColor"
+                    },
+                    "border": {
+                        "$ref": "#/definitions/CSSHEXColor"
+                    },
+                    "background": {
+                        "$ref": "#/definitions/CSSHEXColor"
+                    },
+                    "appName": {
+                        "$ref": "#/definitions/CSSHEXColor"
+                    },
+                    "scrollbarThumb": {
+                        "$ref": "#/definitions/CSSHEXColor"
+                    },
+                    "buttonsBorder": {
+                        "$ref": "#/definitions/CSSHEXColor"
+                    }
+                },
+                "required": [
+                    "neutral",
+                    "primary",
+                    "secondary",
+                    "border",
+                    "background",
+                    "appName",
+                    "scrollbarThumb",
+                    "buttonsBorder"
+                ]
+            }
+        }
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/language-map.schema.json",
+        "title": "Language Map",
+        "anyOf": [
+            {
+                "type": "string"
+            },
+            {
+                "type": "object",
+                "patternProperties": {
+                    "^((?<grandfathered>(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?<language>([A-Za-z]{2,3}(-(?<extlang>[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?<script>[A-Za-z]{4}))?(-(?<region>[A-Za-z]{2}|[0-9]{3}))?(-(?<variant>[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?<extension>[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?<privateUse>x(-[A-Za-z0-9]{1,8})+))?)|(?<privateUse2>x(-[A-Za-z0-9]{1,8})+))$": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "minProperties": 1
+            }
+        ]
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/link.schema.json",
+        "title": "Link Object for the Readium Web Publication Manifest",
+        "type": "object",
+        "properties": {
+            "href": {
+                "description": "URI or URI template of the linked resource",
+                "type": "string"
+            },
+            "type": {
+                "description": "MIME type of the linked resource",
+                "type": "string"
+            },
+            "templated": {
+                "description": "Indicates that a URI template is used in href",
+                "type": "boolean"
+            },
+            "title": {
+                "$ref": "https://readium.org/webpub-manifest/schema/language-map.schema.json"
+            },
+            "rel": {
+                "description": "Relation between the linked resource and its containing collection",
+                "type": [
+                    "string",
+                    "array"
+                ],
+                "items": {
+                    "type": "string"
+                }
+            },
+            "properties": {
+                "description": "Properties associated to the linked resource",
+                "type": "object",
+                "properties": {
+                    "page": {
+                        "description": "Indicates how the linked resource should be displayed in a reading environment that displays synthetic spreads.",
+                        "type": "string",
+                        "enum": [
+                            "left",
+                            "right",
+                            "center"
+                        ]
+                    }
+                },
+                "allOf": [
+                    {
+                        "$ref": "https://drafts.opds.io/schema/properties.schema.json"
+                    }
+                ]
+            },
+            "height": {
+                "description": "Height of the linked resource in pixels",
+                "type": "integer",
+                "exclusiveMinimum": 0
+            },
+            "width": {
+                "description": "Width of the linked resource in pixels",
+                "type": "integer",
+                "exclusiveMinimum": 0
+            },
+            "size": {
+                "description": "Original size of the resource in bytes, prior to any use of encryption or compression in an archive",
+                "type": "integer",
+                "exclusiveMinimum": 0
+            },
+            "bitrate": {
+                "description": "Bitrate of the linked resource in kbps",
+                "type": "number",
+                "exclusiveMinimum": 0
+            },
+            "duration": {
+                "description": "Length of the linked resource in seconds",
+                "type": "number",
+                "exclusiveMinimum": 0
+            },
+            "language": {
+                "description": "Expected language of the linked resource",
+                "type": [
+                    "string",
+                    "array"
+                ],
+                "items": {
+                    "type": "string",
+                    "pattern": "^((?<grandfathered>(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?<language>([A-Za-z]{2,3}(-(?<extlang>[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?<script>[A-Za-z]{4}))?(-(?<region>[A-Za-z]{2}|[0-9]{3}))?(-(?<variant>[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?<extension>[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?<privateUse>x(-[A-Za-z0-9]{1,8})+))?)|(?<privateUse2>x(-[A-Za-z0-9]{1,8})+))$"
+                },
+                "pattern": "^((?<grandfathered>(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?<language>([A-Za-z]{2,3}(-(?<extlang>[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?<script>[A-Za-z]{4}))?(-(?<region>[A-Za-z]{2}|[0-9]{3}))?(-(?<variant>[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?<extension>[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?<privateUse>x(-[A-Za-z0-9]{1,8})+))?)|(?<privateUse2>x(-[A-Za-z0-9]{1,8})+))$"
+            },
+            "alternate": {
+                "description": "Alternate resources for the linked resource",
+                "type": "array",
+                "items": {
+                    "$ref": "link.schema.json"
+                }
+            },
+            "children": {
+                "description": "Resources that are children of the linked resource, in the context of a given collection role",
+                "type": "array",
+                "items": {
+                    "$ref": "link.schema.json"
+                }
+            }
+        },
+        "required": [
+            "href"
+        ],
+        "if": {
+            "properties": {
+                "templated": {
+                    "enum": [
+                        false,
+                        null
+                    ]
+                }
+            }
+        },
+        "then": {
+            "properties": {
+                "href": {
+                    "type": "string",
+                    "format": "uri-reference"
+                }
+            }
+        },
+        "else": {
+            "properties": {
+                "href": {
+                    "type": "string",
+                    "format": "uri-template"
+                }
+            }
+        }
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://drafts.opds.io/schema/publication.schema.json",
+        "title": "OPDS Publication",
+        "type": "object",
+        "properties": {
+            "metadata": {
+                "$ref": "https://readium.org/webpub-manifest/schema/metadata.schema.json"
+            },
+            "links": {
+                "type": "array",
+                "items": {
+                    "$ref": "https://readium.org/webpub-manifest/schema/link.schema.json"
+                },
+                "contains": {
+                    "description": "A publication must contain at least one acquisition link.",
+                    "properties": {
+                        "rel": {
+                            "anyOf": [
+                                {
+                                    "type": "string",
+                                    "enum": [
+                                        "preview",
+                                        "http://opds-spec.org/acquisition",
+                                        "http://opds-spec.org/acquisition/buy",
+                                        "http://opds-spec.org/acquisition/open-access",
+                                        "http://opds-spec.org/acquisition/borrow",
+                                        "http://opds-spec.org/acquisition/sample",
+                                        "http://opds-spec.org/acquisition/subscribe"
+                                    ]
+                                },
+                                {
+                                    "type": "array",
+                                    "contains": {
+                                        "type": "string",
+                                        "enum": [
+                                            "preview",
+                                            "http://opds-spec.org/acquisition",
+                                            "http://opds-spec.org/acquisition/buy",
+                                            "http://opds-spec.org/acquisition/open-access",
+                                            "http://opds-spec.org/acquisition/borrow",
+                                            "http://opds-spec.org/acquisition/sample",
+                                            "http://opds-spec.org/acquisition/subscribe"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "images": {
+                "description": "Images are meant to be displayed to the user when browsing publications",
+                "type": "array",
+                "items": {
+                    "$ref": "https://readium.org/webpub-manifest/schema/link.schema.json"
+                },
+                "minItems": 1,
+                "allOf": [
+                    {
+                        "description": "At least one image resource must use one of the following formats: image/jpeg, image/avif, image/png or image/gif.",
+                        "contains": {
+                            "properties": {
+                                "type": {
+                                    "enum": [
+                                        "image/jpeg",
+                                        "image/avif",
+                                        "image/png",
+                                        "image/gif"
+                                    ]
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                ]
+            }
+        },
+        "required": [
+            "metadata",
+            "links"
+        ]
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/metadata.schema.json",
+        "title": "Metadata",
+        "type": "object",
+        "properties": {
+            "@type": {
+                "type": "string",
+                "format": "uri"
+            },
+            "conformsTo": {
+                "type": [
+                    "string",
+                    "array"
+                ],
+                "format": "uri",
+                "items": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            },
+            "title": {
+                "$ref": "https://readium.org/webpub-manifest/schema/language-map.schema.json"
+            },
+            "sortAs": {
+                "$ref": "https://readium.org/webpub-manifest/schema/language-map.schema.json"
+            },
+            "subtitle": {
+                "$ref": "https://readium.org/webpub-manifest/schema/language-map.schema.json"
+            },
+            "identifier": {
+                "type": "string",
+                "format": "uri"
+            },
+            "altIdentifier": {
+                "$ref": "https://readium.org/webpub-manifest/schema/altIdentifier.schema.json"
+            },
+            "accessibility": {
+                "$ref": "https://readium.org/webpub-manifest/schema/a11y.schema.json"
+            },
+            "modified": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "published": {
+                "type": "string",
+                "anyOf": [
+                    {
+                        "format": "date"
+                    },
+                    {
+                        "format": "date-time"
+                    }
+                ]
+            },
+            "language": {
+                "description": "The language must be a valid BCP 47 tag.",
+                "type": [
+                    "string",
+                    "array"
+                ],
+                "items": {
+                    "type": "string",
+                    "pattern": "^((?<grandfathered>(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?<language>([A-Za-z]{2,3}(-(?<extlang>[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?<script>[A-Za-z]{4}))?(-(?<region>[A-Za-z]{2}|[0-9]{3}))?(-(?<variant>[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?<extension>[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?<privateUse>x(-[A-Za-z0-9]{1,8})+))?)|(?<privateUse2>x(-[A-Za-z0-9]{1,8})+))$"
+                },
+                "pattern": "^((?<grandfathered>(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?<language>([A-Za-z]{2,3}(-(?<extlang>[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?<script>[A-Za-z]{4}))?(-(?<region>[A-Za-z]{2}|[0-9]{3}))?(-(?<variant>[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?<extension>[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?<privateUse>x(-[A-Za-z0-9]{1,8})+))?)|(?<privateUse2>x(-[A-Za-z0-9]{1,8})+))$"
+            },
+            "author": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "translator": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "editor": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "artist": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "illustrator": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "letterer": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "penciler": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "colorist": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "inker": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "narrator": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "contributor": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "publisher": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "imprint": {
+                "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+            },
+            "subject": {
+                "$ref": "https://readium.org/webpub-manifest/schema/subject.schema.json"
+            },
+            "layout": {
+                "description": "Hints how the layout of the publication should be presented",
+                "type": "string",
+                "enum": [
+                    "fixed",
+                    "reflowable",
+                    "scrolled"
+                ]
+            },
+            "readingProgression": {
+                "type": "string",
+                "enum": [
+                    "rtl",
+                    "ltr"
+                ],
+                "default": "ltr"
+            },
+            "description": {
+                "type": "string"
+            },
+            "duration": {
+                "type": "number",
+                "exclusiveMinimum": 0
+            },
+            "numberOfPages": {
+                "type": "integer",
+                "exclusiveMinimum": 0
+            },
+            "belongsTo": {
+                "type": "object",
+                "properties": {
+                    "collection": {
+                        "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+                    },
+                    "series": {
+                        "$ref": "https://readium.org/webpub-manifest/schema/contributor.schema.json"
+                    }
+                }
+            },
+            "tdm": {
+                "type": "object",
+                "required": [
+                    "reservation"
+                ],
+                "properties": {
+                    "reservation": {
+                        "type": "string",
+                        "enum": [
+                            "all",
+                            "none"
+                        ]
+                    },
+                    "policy": {
+                        "type": "string",
+                        "format": "uri"
+                    }
+                }
+            }
+        },
+        "required": [
+            "title"
+        ]
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://drafts.opds.io/schema/properties.schema.json",
+        "title": "OPDS Link Properties",
+        "type": "object",
+        "properties": {
+            "numberOfItems": {
+                "description": "Provide a hint about the expected number of items returned",
+                "type": "integer",
+                "minimum": 0
+            },
+            "price": {
+                "description": "The price of a publication is tied to its acquisition link",
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "currency": {
+                        "type": "string",
+                        "enum": [
+                            "AED",
+                            "AFN",
+                            "ALL",
+                            "AMD",
+                            "ANG",
+                            "AOA",
+                            "ARS",
+                            "AUD",
+                            "AWG",
+                            "AZN",
+                            "BAM",
+                            "BBD",
+                            "BDT",
+                            "BGN",
+                            "BHD",
+                            "BIF",
+                            "BMD",
+                            "BND",
+                            "BOB",
+                            "BOV",
+                            "BRL",
+                            "BSD",
+                            "BTN",
+                            "BWP",
+                            "BYN",
+                            "BZD",
+                            "CAD",
+                            "CDF",
+                            "CHE",
+                            "CHF",
+                            "CHW",
+                            "CLF",
+                            "CLP",
+                            "CNY",
+                            "COP",
+                            "COU",
+                            "CRC",
+                            "CUC",
+                            "CUP",
+                            "CVE",
+                            "CZK",
+                            "DJF",
+                            "DKK",
+                            "DOP",
+                            "DZD",
+                            "EGP",
+                            "ERN",
+                            "ETB",
+                            "EUR",
+                            "FJD",
+                            "FKP",
+                            "GBP",
+                            "GEL",
+                            "GHS",
+                            "GIP",
+                            "GMD",
+                            "GNF",
+                            "GTQ",
+                            "GYD",
+                            "HKD",
+                            "HNL",
+                            "HRK",
+                            "HTG",
+                            "HUF",
+                            "IDR",
+                            "ILS",
+                            "INR",
+                            "IQD",
+                            "IRR",
+                            "ISK",
+                            "JMD",
+                            "JOD",
+                            "JPY",
+                            "KES",
+                            "KGS",
+                            "KHR",
+                            "KMF",
+                            "KPW",
+                            "KRW",
+                            "KWD",
+                            "KYD",
+                            "KZT",
+                            "LAK",
+                            "LBP",
+                            "LKR",
+                            "LRD",
+                            "LSL",
+                            "LYD",
+                            "MAD",
+                            "MDL",
+                            "MGA",
+                            "MKD",
+                            "MMK",
+                            "MNT",
+                            "MOP",
+                            "MRU",
+                            "MUR",
+                            "MVR",
+                            "MWK",
+                            "MXN",
+                            "MXV",
+                            "MYR",
+                            "MZN",
+                            "NAD",
+                            "NGN",
+                            "NIO",
+                            "NOK",
+                            "NPR",
+                            "NZD",
+                            "OMR",
+                            "PAB",
+                            "PEN",
+                            "PGK",
+                            "PHP",
+                            "PKR",
+                            "PLN",
+                            "PYG",
+                            "QAR",
+                            "RON",
+                            "RSD",
+                            "RUB",
+                            "RWF",
+                            "SAR",
+                            "SBD",
+                            "SCR",
+                            "SDG",
+                            "SEK",
+                            "SGD",
+                            "SHP",
+                            "SLL",
+                            "SOS",
+                            "SRD",
+                            "SSP",
+                            "STN",
+                            "SVC",
+                            "SYP",
+                            "SZL",
+                            "THB",
+                            "TJS",
+                            "TMT",
+                            "TND",
+                            "TOP",
+                            "TRY",
+                            "TTD",
+                            "TWD",
+                            "TZS",
+                            "UAH",
+                            "UGX",
+                            "USD",
+                            "USN",
+                            "UYI",
+                            "UYU",
+                            "UZS",
+                            "VEF",
+                            "VES",
+                            "VND",
+                            "VUV",
+                            "WST",
+                            "XAF",
+                            "XAG",
+                            "XAU",
+                            "XBA",
+                            "XBB",
+                            "XBC",
+                            "XBD",
+                            "XCD",
+                            "XDR",
+                            "XOF",
+                            "XPD",
+                            "XPF",
+                            "XPT",
+                            "XSU",
+                            "XTS",
+                            "XUA",
+                            "XXX",
+                            "YER",
+                            "ZAR",
+                            "ZMW",
+                            "ZWL"
+                        ]
+                    }
+                },
+                "required": [
+                    "currency",
+                    "value"
+                ]
+            },
+            "indirectAcquisition": {
+                "description": "Indirect acquisition provides a hint for the expected media type that will be acquired after additional steps",
+                "type": "array",
+                "items": {
+                    "$ref": "https://drafts.opds.io/schema/acquisition-object.schema.json"
+                }
+            },
+            "holds": {
+                "description": "Library-specific feature for unavailable books that support a hold list",
+                "type": "object",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "position": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            },
+            "copies": {
+                "description": "Library-specific feature that contains information about the copies that a library has acquired",
+                "type": "object",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "available": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            },
+            "availability": {
+                "description": "Indicates the availability of a given resource",
+                "type": "object",
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "available",
+                            "unavailable",
+                            "reserved",
+                            "ready"
+                        ]
+                    },
+                    "since": {
+                        "description": "Timestamp for the previous state change",
+                        "type": "string",
+                        "anyOf": [
+                            {
+                                "format": "date"
+                            },
+                            {
+                                "format": "date-time"
+                            }
+                        ]
+                    },
+                    "until": {
+                        "description": "Timestamp for the next state change",
+                        "type": "string",
+                        "anyOf": [
+                            {
+                                "format": "date"
+                            },
+                            {
+                                "format": "date-time"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "state"
+                ]
+            }
+        }
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/altIdentifier.schema.json",
+        "title": "Alternate Identifiers",
+        "type": "array",
+        "items": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "format": "uri"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "value": {
+                            "type": "string"
+                        },
+                        "scheme": {
+                            "type": "string",
+                            "format": "uri"
+                        }
+                    },
+                    "required": [
+                        "value"
+                    ]
+                }
+            ]
+        },
+        "minItems": 1
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/a11y.schema.json",
+        "title": "Accessibility Object",
+        "type": "object",
+        "properties": {
+            "conformsTo": {
+                "type": [
+                    "string",
+                    "array"
+                ],
+                "format": "uri",
+                "items": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            },
+            "exemption": {
+                "type": "string",
+                "enum": [
+                    "eaa-disproportionate-burden",
+                    "eaa-fundamental-alteration",
+                    "eaa-microenterprise"
+                ]
+            },
+            "accessMode": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "auditory",
+                        "chartOnVisual",
+                        "chemOnVisual",
+                        "colorDependent",
+                        "diagramOnVisual",
+                        "mathOnVisual",
+                        "musicOnVisual",
+                        "tactile",
+                        "textOnVisual",
+                        "textual",
+                        "visual"
+                    ]
+                }
+            },
+            "accessModeSufficient": {
+                "type": "array",
+                "items": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": [
+                                "auditory",
+                                "tactile",
+                                "textual",
+                                "visual"
+                            ]
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "auditory",
+                                    "tactile",
+                                    "textual",
+                                    "visual"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "feature": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "annotations",
+                        "ARIA",
+                        "bookmarks",
+                        "index",
+                        "pageBreakMarkers",
+                        "printPageNumbers",
+                        "pageNavigation",
+                        "readingOrder",
+                        "structuralNavigation",
+                        "tableOfContents",
+                        "taggedPDF",
+                        "alternativeText",
+                        "audioDescription",
+                        "closeCaptions",
+                        "captions",
+                        "describedMath",
+                        "longDescription",
+                        "openCaptions",
+                        "signLanguage",
+                        "transcript",
+                        "displayTransformability",
+                        "synchronizedAudioText",
+                        "timingControl",
+                        "unlocked",
+                        "ChemML",
+                        "latex",
+                        "latex-chemistry",
+                        "MathML",
+                        "MathML-chemistry",
+                        "ttsMarkup",
+                        "highContrastAudio",
+                        "highContrastDisplay",
+                        "largePrint",
+                        "braille",
+                        "tactileGraphic",
+                        "tactileObject",
+                        "fullRubyAnnotations",
+                        "horizontalWriting",
+                        "rubyAnnotations",
+                        "verticalWriting",
+                        "withAdditionalWordSegmentation",
+                        "withoutAdditionalWordSegmentation",
+                        "none",
+                        "unknown"
+                    ]
+                }
+            },
+            "hazard": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "flashing",
+                        "motionSimulation",
+                        "sound",
+                        "none",
+                        "noFlashingHazard",
+                        "noMotionSimulationHazard",
+                        "noSoundHazard",
+                        "unknown",
+                        "unknownFlashingHazard",
+                        "unknownMotionSimulationHazard",
+                        "unknownSoundHazard"
+                    ]
+                }
+            },
+            "certification": {
+                "type": "object",
+                "properties": {
+                    "certifiedBy": {
+                        "type": "string"
+                    },
+                    "credential": {
+                        "type": "string"
+                    },
+                    "report": {
+                        "type": "string"
+                    }
+                }
+            },
+            "summary": {
+                "type": "string"
+            }
+        }
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/contributor.schema.json",
+        "title": "Contributor",
+        "anyOf": [
+            {
+                "type": "string"
+            },
+            {
+                "type": "array",
+                "items": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "$ref": "contributor-object.schema.json"
+                        }
+                    ]
+                }
+            },
+            {
+                "$ref": "contributor-object.schema.json"
+            }
+        ]
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/subject.schema.json",
+        "title": "Subject",
+        "anyOf": [
+            {
+                "type": "string"
+            },
+            {
+                "type": "array",
+                "items": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "$ref": "subject-object.schema.json"
+                        }
+                    ]
+                }
+            },
+            {
+                "$ref": "subject-object.schema.json"
+            }
+        ]
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://drafts.opds.io/schema/acquisition-object.schema.json",
+        "title": "OPDS Acquisition Object",
+        "type": "object",
+        "properties": {
+            "type": {
+                "type": "string"
+            },
+            "child": {
+                "type": "array",
+                "items": {
+                    "$ref": "acquisition-object.schema.json"
+                }
+            }
+        },
+        "required": [
+            "type"
+        ]
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/contributor-object.schema.json",
+        "title": "Contributor Object",
+        "type": "object",
+        "properties": {
+            "name": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "description": "The language in a language map must be a valid BCP 47 tag.",
+                        "type": "object",
+                        "patternProperties": {
+                            "^((?<grandfathered>(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?<language>([A-Za-z]{2,3}(-(?<extlang>[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?<script>[A-Za-z]{4}))?(-(?<region>[A-Za-z]{2}|[0-9]{3}))?(-(?<variant>[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?<extension>[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?<privateUse>x(-[A-Za-z0-9]{1,8})+))?)|(?<privateUse2>x(-[A-Za-z0-9]{1,8})+))$": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "minProperties": 1
+                    }
+                ]
+            },
+            "identifier": {
+                "type": "string",
+                "format": "uri"
+            },
+            "altIdentifier": {
+                "$ref": "altIdentifier.schema.json"
+            },
+            "sortAs": {
+                "type": "string"
+            },
+            "role": {
+                "type": [
+                    "string",
+                    "array"
+                ],
+                "items": {
+                    "type": "string"
+                }
+            },
+            "position": {
+                "type": "number"
+            },
+            "links": {
+                "type": "array",
+                "items": {
+                    "$ref": "link.schema.json"
+                }
+            }
+        },
+        "required": [
+            "name"
+        ]
+    },
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://readium.org/webpub-manifest/schema/subject-object.schema.json",
+        "title": "Subject Object",
+        "type": "object",
+        "properties": {
+            "name": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "description": "The language in a language map must be a valid BCP 47 tag.",
+                        "type": "object",
+                        "patternProperties": {
+                            "^((?<grandfathered>(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?<language>([A-Za-z]{2,3}(-(?<extlang>[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?<script>[A-Za-z]{4}))?(-(?<region>[A-Za-z]{2}|[0-9]{3}))?(-(?<variant>[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?<extension>[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?<privateUse>x(-[A-Za-z0-9]{1,8})+))?)|(?<privateUse2>x(-[A-Za-z0-9]{1,8})+))$": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "minProperties": 1
+                    }
+                ]
+            },
+            "sortAs": {
+                "type": "string"
+            },
+            "code": {
+                "type": "string"
+            },
+            "scheme": {
+                "type": "string",
+                "format": "uri"
+            },
+            "links": {
+                "type": "array",
+                "items": {
+                    "$ref": "link.schema.json"
+                }
+            }
+        },
+        "required": [
+            "name"
+        ]
+    }
+]
