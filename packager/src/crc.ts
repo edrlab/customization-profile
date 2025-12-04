@@ -5,6 +5,10 @@
 // that can be found in the LICENSE file exposed on Github (readium) in the project repository.
 // ==LICENSE-END==
 
+/**
+ * extracted from https://github.com/edrlab/thorium-reader/blob/d2c246f0096e9f0ff6451b628b6562282bc666d3/src/main/tools/crc.ts
+ */
+
 import * as crypto from "crypto";
 import debug_ from "debug";
 import * as fs from "fs";

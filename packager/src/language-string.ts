@@ -5,6 +5,10 @@
 // that can be found in the LICENSE file exposed on Github (readium) in the project repository.
 // ==LICENSE-END==
 
+/**
+ * Extracted from https://github.com/edrlab/thorium-reader/blob/d2c246f0096e9f0ff6451b628b6562282bc666d3/src/common/language-string.ts
+ */
+
 import type { IStringMap } from "./profileManifest.type.js";
 
 // import { Contributor } from "@r2-shared-js/models/metadata-contributor";
