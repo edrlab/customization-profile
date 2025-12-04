@@ -26,8 +26,13 @@ const main = () => {
     }
 
     if (!(fs.existsSync(outputDir) && fs.statSync(outputDir).isDirectory())) {
-        process.stderr.write("No output directory found, exit\n");
-        process.exit(1);
+        try {
+            fs.mkdirSync(outputDir);
+        } catch (e) {
+            console.error(e);
+            process.stderr.write("No output directory found, exit\n");
+            process.exit(1);
+        }
     }
 
     const manifestPath = path.resolve(inputDir, "manifest.json");
