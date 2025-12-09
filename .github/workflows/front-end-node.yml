@@ -67,7 +67,7 @@ jobs:
         service: front-end-node
         image: ${{ env.IMAGE }}
         region: europe-west1
-        secrets: |-
-          SECRETS_ENCODED=${{ env.SECRETS_ENCODED }}:latest
+        env_vars: |-
+          SECRETS_ENCODED=${{ env.SECRETS_ENCODED }}
     - name: 'Test output'
       run: 'curl "${{ steps.deploy.outputs.url }}"'
