@@ -17,6 +17,7 @@ profile.get('/',
 
         console.log("GIT=", c.var.git);
         console.log("GIT directory=", c.var.gitDirectory);
+        console.log("GIT branch=", c.var.branchName);
 
         let manifest = __DEFAULT_MANIFEST_TEMPLATE();
         try {

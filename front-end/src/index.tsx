@@ -20,6 +20,7 @@ import login from './controller/login.js'
 import profile from './controller/profile.js'
 import upload from './controller/upload.js';
 import status_ from './controller/status.js';
+import dashboard from './controller/dashboard.js';
 // import { Layout } from './view/layout.js';
 
 const app = new Hono()
@@ -66,6 +67,7 @@ app.use('*', async (c, next) => {
   await next();
 });
 
+app.route('/', dashboard);
 app.route('/login', login);
 app.route('/profile', profile);
 app.route('/upload', upload);
