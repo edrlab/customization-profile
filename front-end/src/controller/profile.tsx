@@ -18,7 +18,7 @@ profile.get('/',
         console.log("GIT=", c.var.git);
         console.log("GIT directory=", c.var.gitDirectory);
 
-        let manifest = __DEFAULT_MANIFEST_TEMPLATE;
+        let manifest = __DEFAULT_MANIFEST_TEMPLATE();
         try {
             const manifestPath = path.join(c.var.gitDirectory, "manifest.json");
             const manifestString = await fsp.readFile(manifestPath, { encoding: "utf-8" });
@@ -41,7 +41,7 @@ profile.get('/',
                 </div>
                 <hr/>
                 <form hx-post="/profile" hx-target="#output">
-                    <fieldset>
+                    {/* <fieldset>
                         <label for="version">Version</label>
                         <input
                             id="version"
@@ -50,7 +50,10 @@ profile.get('/',
                             value={manifest.version}
                             aria-invalid={undefined}
                         />
-                    </fieldset>
+                    </fieldset> */}
+                    <p>Version: <span>{manifest.version}</span></p>
+                    <p>Created: <span>{manifest.created}</span></p>
+                    { manifest.modified ? <p>Modified: <span>{manifest.modified}</span></p> : <></> }
 
                     <fieldset>
                         <label for="title">Title</label>
@@ -267,11 +270,13 @@ profile.post('/',
     validator('form', (value, _c): [string | undefined, ICustomizationManifest | undefined] => {
         console.log("[VALIDATOR]: manifest data submission=", value);
 
-        const newManifest: ICustomizationManifest = { ...__DEFAULT_MANIFEST_TEMPLATE };
+        const newManifest: ICustomizationManifest = { ...__DEFAULT_MANIFEST_TEMPLATE() };
+        newManifest.version = 1;
 
-        if (value.version) {
-            newManifest.version = value.version as string;
+        if (!newManifest.created) {
+            newManifest.created = (new Date()).toISOString();
         }
+        newManifest.modified = (new Date()).toISOString();
 
         if (value.title) {
             newManifest.title = JSON.parse(value.title as string) as IStringMap;

@@ -32,12 +32,13 @@ export interface JsonArray extends Array<AnyJson> {
 
 export interface ICustomizationManifest {
 
-    manifestVersion: number;
+    version: number;
     identifier: string; // URI
-    version: string; // semantic versionning
     // contentHash: string;
-    title: IStringMap;
-    description: IStringMap;
+    title: string | IStringMap;
+    description: string | IStringMap;
+    created: string;
+    modified?: string;
     // welcomeScreen: string; // replace with a link rel = "welcome-screen"
     // default_locale: string; // BCP47 // not used anymore but still in notion example manifest
     theme: ICustomizationManifestTheme;
@@ -66,63 +67,83 @@ export interface ICustomizationManifestColor {
     buttonsBorder: string;
 }
 
-export interface ICustomizationManifestSignature {
-    key: string;
-    value: string;
-    algorithm: string; // URI
-}
+// export interface ICustomizationManifestSignature {
+//     key: string;
+//     value: string;
+//     algorithm: string; // URI
+// }
 
 export interface ICustomizationManifestLinkPropertiesExtension {
-    showOnHomeSection?: boolean;
+    // showOnHomeSection?: boolean;
     // showDeletion?: boolean;
     // defaultProfile?: boolean;
     authenticate?: ICustomizationLink;
-    logo?: ICustomizationLink;
+    // logo?: ICustomizationLink; // never used in thorium-desktop
 }
 
 export interface ICustomizationLink {
+
+    // https://github.com/ajv-validator/ajv-formats/blob/4ca86d21bd07571a30178cbb3714133db6eada9a/src/formats.ts#L56
+    // https://developer.mozilla.org/en-US/docs/Web/URI/Reference
     href: string; // relative file path in zip directory or http(s) link => not fully an URI
+
     rel?: string;
     type?: string;
-    title?: IStringMap;
+    title?: string | IStringMap;
     language?: string; // bcp47
 }
 
-export const customizationManifestJsonSchema = {
+export const customizationManifestJsonSchemaMinimal = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Thorium Manifest Schema",
+  "title": "Thorium Profile Manifest Json Schema (minimal)",
   "type": "object",
   "required": [
-    "manifestVersion",
-    "identifier",
     "version",
-    // "contentHash",
+    "created",
+    "identifier",
     "title",
     "description",
     "theme",
-    "images",
   ],
   "properties": {
-    "manifestVersion": {
+    "version": {
       "type": "integer",
     },
     "identifier": {
       "type": "string",
       "format": "uri",
     },
-    "version": {
+    "created": {
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "format": "semver"
     },
-    "contentHash": {
+    "modified": {
       "type": "string",
     },
     "title": {
-      "$ref": "#/definitions/ICustomizationManifestIStringMap",
+      "oneOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+          },
+        },
+      ],
     },
     "description": {
-      "$ref": "#/definitions/ICustomizationManifestIStringMap",
+      "oneOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+          },
+        },
+      ],
     },
     "theme": {
       "type": "object",
@@ -151,121 +172,22 @@ export const customizationManifestJsonSchema = {
       "type": "array",
       "items": {
         "type": "object",
-        "properties": {
-          "rel": {
-            "type": "string"
-          },
-          "href": {
-            "type": "string",
-            "format": "uri-reference"
-          },
-          "type": {
-            "type": "string"
-          },
-          "title": {
-            "$ref": "#/definitions/ICustomizationManifestIStringMap",
-          },
-          "language": {
-            "type": "string",
-            "pattern": "^([A-Za-z]{2})(-[A-Za-z]{2})?$"
-          },
-          "properties": {
-            "type": "object",
-            "properties": {
-              "authenticate": {
-                "type": "object",
-                "properties": {
-                  "type": { "type": "string" },
-                  "href": { "type": "string", "format": "uri" }
-                },
-                "required": ["type", "href"]
-              },
-              "logo": {
-                "type": "object",
-                "properties": {
-                  "type": { "type": "string" },
-                  "href": { "type": "string", "format": "uri-reference" }
-                },
-                "required": ["type", "href"]
-              }
-            },
-          }
-        },
-        "required": ["rel", "href"]
-      }
+      },
     },
     "publications": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "metadata",
-          "links",
-          "images",
-        ],
-        "properties": {
-          "metadata": {
-            "type": "object",
-          },
-          "links": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/ICustomizationManifestReducedLinks"
-            }
-          },
-          "images": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/ICustomizationManifestReducedLinks"
-            }
-          }
-        }
       },
     },
     "images": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/ICustomizationManifestReducedLinks"
+        "type": "object",
       },
     },
   },
   "definitions": {
-    "ICustomizationManifestReducedLinks": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Links",
-      "type": "object",
-      "properties": {
-        "rel": {
-          "type": "string"
-        },
-        "href": {
-          "type": "string",
-          "format": "uri-reference"
-        },
-        "type": {
-          "type": "string"
-        },
-        "language": {
-          "type": "string",
-          "pattern": "^([A-Za-z]{2})(-[A-Za-z]{2})?$"
-        }
-      },
-      "required": [
-        "href",
-      ],
-    },
-    "ICustomizationManifestIStringMap": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "IStringMap",
-      "type": "object",
-      "propertyNames": {
-        "pattern": "^([A-Za-z]{2})(-[A-Za-z]{2})?$"
-      },
-      "additionalProperties": {
-        "type": "string",
-      },
-      "minProperties": 1,
-    },
     "ICustomizationManifestThemeColor": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Theme color",
@@ -273,35 +195,27 @@ export const customizationManifestJsonSchema = {
       "properties": {
         "neutral": {
           "type": "string",
-          "pattern": "^#[0-9A-F]{6}$"
         },
         "primary": {
           "type": "string",
-          "pattern": "^#[0-9A-F]{6}$"
         },
         "secondary": {
           "type": "string",
-          "pattern": "^#[0-9A-F]{6}$"
         },
         "border": {
           "type": "string",
-          "pattern": "^#[0-9A-F]{6}$"
         },
         "background": {
           "type": "string",
-          "pattern": "^#[0-9A-F]{6}$"
         },
         "appName": {
           "type": "string",
-          "pattern": "^#[0-9A-F]{6}$"
         },
         "scrollbarThumb": {
           "type": "string",
-          "pattern": "^#[0-9A-F]{6}$"
         },
         "buttonsBorder": {
           "type": "string",
-          "pattern": "^#[0-9A-F]{6}$"
         },
       },
       "required": [
@@ -328,17 +242,17 @@ export function isCustomizationProfileManifest(data: any): data is ICustomizatio
     // eslint-disable-next-line
     addSemver.default(ajv);
 
-    const valid = ajv.validate(customizationManifestJsonSchema, data);
+    const valid = ajv.validate(customizationManifestJsonSchemaMinimal, data);
 
     __CUSTOMIZATION_PROFILE_MANIFEST_AJV_ERRORS = ajv.errors?.length ? JSON.stringify(ajv.errors, null, 2) : "";
 
     return valid;
 }
 
-export const __DEFAULT_MANIFEST_TEMPLATE: ICustomizationManifest= {
-  "manifestVersion": 1,
+export const __DEFAULT_MANIFEST_TEMPLATE = (): ICustomizationManifest => ({
+  "version": 1,
+  "created": (new Date()).toISOString(),
   "identifier": "thorium-manifest://com.example.your-extension",
-  "version": "1.0.0",
 	"title": {
 	  "en": "Sample profile title",
 	},
@@ -355,7 +269,7 @@ export const __DEFAULT_MANIFEST_TEMPLATE: ICustomizationManifest= {
         "background": "#000000",
         "appName": "#000000",
         "scrollbarThumb": "#000000",
-        "buttonsBorder": "000000",
+        "buttonsBorder": "#000000",
       },
       "light": {
         "neutral": "#000000",
@@ -372,4 +286,4 @@ export const __DEFAULT_MANIFEST_TEMPLATE: ICustomizationManifest= {
   "links": [],
   "publications": [],
   "images": [],
-};
+});
