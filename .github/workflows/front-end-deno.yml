@@ -4,6 +4,7 @@ on:
     branches: [ develop ]
     paths:
       - front-end/**
+      - .github/workflows/front-end-deno.yml
     tags-ignore:
       - '*'
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
