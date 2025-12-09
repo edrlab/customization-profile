@@ -57,7 +57,7 @@ jobs:
           gcloud auth configure-docker europe-west1-docker.pkg.dev -q
           docker push "$IMAGE:$GITHUB_SHA"
           echo "IMAGE=$IMAGE:$GITHUB_SHA" >> $GITHUB_ENV
-          echo "SECRETS_ENCODED:$(jq -c . src/secrets.json | base64)" >> $GITHUB_ENV
+          echo "SECRETS_ENCODED=$(jq -c . src/secrets.json | base64)" >> $GITHUB_ENV
     - name: Deploy to Cloud Run
       id: deploy
       uses: google-github-actions/deploy-cloudrun@v3
