@@ -68,6 +68,6 @@ jobs:
         image: ${{ env.IMAGE }}
         region: europe-west1
         env_vars: |-
-          SECRETS_ENCODED=${{ env.SECRETS_ENCODED }}
+          SECRETS_ENCODED="${{ env.SECRETS_ENCODED }}"
     - name: 'Test output'
       run: 'curl "${{ steps.deploy.outputs.url }}"'
