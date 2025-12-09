@@ -56,6 +56,7 @@ jobs:
           gcloud auth configure-docker europe-west1-docker.pkg.dev -q
           docker push "$IMAGE:$GITHUB_SHA"
           echo "IMAGE=$IMAGE:$GITHUB_SHA" >> $GITHUB_ENV
+          echo "SECRETS_ENCODED:$(jq -c . front-end/src/secrets.json | base64)" >> $GITHUB_ENV
     - name: Deploy to Cloud Run
       id: deploy
       uses: google-github-actions/deploy-cloudrun@v3
@@ -63,5 +64,7 @@ jobs:
         service: front-end-node
         image: ${{ env.IMAGE }}
         region: europe-west1
+        secrets: |-
+          SECRETS_ENCODED=${{ env.SECRETS_ENCODED }}:latest
     - name: 'Test output'
       run: 'curl "${{ steps.deploy.outputs.url }}"'

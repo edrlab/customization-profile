@@ -1,7 +1,7 @@
-import * as secrets from "../secrets.json" with { type: "json" };
 import type { IAuthentication } from "../model/cookie.js";
 import { getSignedCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
+import { secrets } from "../model/secrets.js";
 
 export const authenticationMiddleware =  createMiddleware<{
   Variables: {
@@ -9,7 +9,7 @@ export const authenticationMiddleware =  createMiddleware<{
   }
 }>(async (c, next) => {
 
-    const authCookieString = await getSignedCookie(c, secrets.default.key, 'authentication');
+    const authCookieString = await getSignedCookie(c, secrets.key, 'authentication');
     const authCookie = typeof authCookieString === "string" ? JSON.parse(authCookieString) as IAuthentication : undefined;
     console.log("[middleware]: signed cookie value=", authCookie);
 

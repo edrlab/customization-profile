@@ -3,7 +3,7 @@ import type { SimpleGit } from "simple-git";
 import { gitInit } from "../model/git/init.js";
 import type { IAuthentication, ISession } from "../model/cookie.js";
 import { getSignedCookie, setSignedCookie } from "hono/cookie";
-import * as secrets from "../secrets.json" with { type: "json" };
+import { secrets } from "../model/secrets.js";
 
 export const gitMiddleware = createMiddleware<{
   Variables: {
@@ -18,7 +18,7 @@ export const gitMiddleware = createMiddleware<{
         throw new Error("No Authentication Data !");
     }
 
-    const sessionCookie = await getSignedCookie(c, secrets.default.key, "session");
+    const sessionCookie = await getSignedCookie(c, secrets.key, "session");
     if (!sessionCookie) {
         throw new Error("No Session Id");
     }
@@ -27,7 +27,7 @@ export const gitMiddleware = createMiddleware<{
   const { git, expiresAt: expiresAtReceived, gitbaseDir, branchName } = await gitInit(c.var.auth, session, expiresAt);
     if (expiresAt !== expiresAtReceived) {
         const cookie: ISession = {session: session, expiresAt: expiresAtReceived};
-        await setSignedCookie(c, 'session', JSON.stringify(cookie), secrets.default.key);
+        await setSignedCookie(c, 'session', JSON.stringify(cookie), secrets.key);
         console.log(`Set session signed Cookie=${JSON.stringify(cookie)}`);
     }
 
