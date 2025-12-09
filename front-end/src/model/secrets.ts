@@ -10,7 +10,7 @@ export interface ISecrets {
   key: string;
 };
 
-const secretsEncoded = process.env.SECRETS_ENCODED;
+const secretsEncoded = process.env.__SECRETS_ENCODED;
 
 if (!secretsEncoded) {
     throw new Error(`ENV VAR SECRETS Not FOUND!!`);

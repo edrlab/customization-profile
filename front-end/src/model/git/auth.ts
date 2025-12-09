@@ -86,7 +86,7 @@ const githubAppAuthentication = async (githubAppId: string, clientId: string, pr
 
 export const githubAuthentication = async () => {
 
-    const privateKey = process.env.__GITHUB_APP_PRIVATE_KEY;
+    const privateKey = process.env.__GITHUB_APP_PRIVATE_KEY?.replace(/\\n/g, '\n');;
     if (!privateKey) {
         throw new Error("No Private Key!");
     }
