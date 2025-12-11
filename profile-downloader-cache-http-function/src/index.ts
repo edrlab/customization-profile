@@ -1,6 +1,9 @@
 import { http } from '@google-cloud/functions-framework';
-// const {ArtifactRegistryClient} = require('@google-cloud/artifact-registry').v1;
 import * as artifact from "@google-cloud/artifact-registry";
+import { GoogleAuth } from "google-auth-library"
+import { Readable } from "stream"
+import { ReadableStream } from 'node:stream/web'
+
 const { ArtifactRegistryClient } = artifact.v1;
 interface IArtifact {
   project: string;
@@ -19,6 +22,8 @@ http('profile-downloader-cache-http-function', async (req, res) => {
   const requestPath = req.path;
   console.log("function request path=", requestPath);
 
+  let stream = false;
+
   const repositories = requestPath.replaceAll("/", "").replaceAll("\\", "").trim();
   if (!repositories) {
     console.error("No repositories found in request path, send error 404", repositories);
@@ -33,7 +38,7 @@ http('profile-downloader-cache-http-function', async (req, res) => {
   const artifactregistryClient = new ArtifactRegistryClient();
 
   let artifactLatest: IArtifact | undefined;
-  let redirectLocation = "https://artifactregistry.googleapis.com/download/v1/projects/PROJECT/locations/LOCATION/repositories/REPOSITORY/files/FILE:download?alt=media";
+  let artifactRegistryProfileUrl = "https://artifactregistry.googleapis.com/download/v1/projects/PROJECT/locations/LOCATION/repositories/REPOSITORY/files/FILE:download?alt=media";
 
   async function callListFiles() {
     // Construct request
@@ -97,7 +102,13 @@ http('profile-downloader-cache-http-function', async (req, res) => {
   }
 
   try {
-    await callListFiles();
+
+    try {
+      await callListFiles();
+    } catch (e) {
+      res.statusCode = 404;
+      console.error("Error to fetch artifact registry profile", e);
+    }
 
     if (artifactLatest && artifactLatest.project && artifactLatest.location && artifactLatest.repository && artifactLatest.fileIdentifierRaw && artifactLatest.file?.version) {
       res.setHeader("ETag", (new Date(artifactLatest.file.version)).toISOString());
@@ -110,13 +121,56 @@ http('profile-downloader-cache-http-function', async (req, res) => {
         res.statusCode = 304;
         console.log("IfNotMatch failed, send status 304 not modified");
       } else {
-        console.log("IfNotMatch success, redirect (302) to the latest artifact release");
-        redirectLocation = redirectLocation.replace("PROJECT", artifactLatest.project);
-        redirectLocation = redirectLocation.replace("LOCATION", artifactLatest.location);
-        redirectLocation = redirectLocation.replace("REPOSITORY", artifactLatest.repository);
-        redirectLocation = redirectLocation.replace("FILE", encodeURIComponent(artifactLatest.fileIdentifierRaw));
-        res.statusCode = 302;
-        res.location(redirectLocation);
+        console.log("IfNotMatch success, stream latest artifact release");
+        artifactRegistryProfileUrl = artifactRegistryProfileUrl.replace("PROJECT", artifactLatest.project);
+        artifactRegistryProfileUrl = artifactRegistryProfileUrl.replace("LOCATION", artifactLatest.location);
+        artifactRegistryProfileUrl = artifactRegistryProfileUrl.replace("REPOSITORY", artifactLatest.repository);
+        artifactRegistryProfileUrl = artifactRegistryProfileUrl.replace("FILE", encodeURIComponent(artifactLatest.fileIdentifierRaw));
+
+        const auth = new GoogleAuth({ scopes: "https://www.googleapis.com/auth/cloud-platform" })
+        const client = await auth.getClient()
+        const token = await client.getAccessToken()
+
+        if (!token?.token) {
+          throw new Error("Google Cloud Platform token not found");
+        }
+
+        const headers: Record<string, string> = {};
+        if (req.headers.range) headers.Range = req.headers.range;
+        headers.Authorization = `Bearer ${token?.token}`;
+
+        const upstream = await fetch(artifactRegistryProfileUrl, { headers });
+        console.log("UPSTREAM Headers", upstream.headers);
+        if (upstream.status !== 200) {
+          console.error("latest artifact release request receive with status code not 200 code=", upstream.status, upstream.statusText);
+          res.statusCode = 404;
+
+        } else {
+          console.log("artifact registry download profile Headers=", JSON.stringify(upstream.headers));
+
+          if (upstream.body) {
+            res.statusCode = 200;
+            res.setHeader("content-type", "application/vnd.edrlab.thorium+zip");
+            if (upstream.headers.get("accept-ranges") === "bytes") {
+              res.setHeader("accept-ranges", "bytes");
+            } else {
+              console.log("Artifact registry download server has not byte range compatibiliy");
+            }
+            const contentLength = upstream.headers.get("content-length");
+            if (contentLength) {
+              res.setHeader("content-length", contentLength);
+            } else {
+              console.log("Artifact registry download server returns no content-length ! why!?");
+            }
+
+            stream = true;
+            Readable.fromWeb(upstream.body as ReadableStream<any>).pipe(res);
+          } else {
+            console.error("NO upstream body !");
+            res.statusCode = 404;
+          }
+        }
+
       }
 
     } else {
@@ -128,7 +182,9 @@ http('profile-downloader-cache-http-function', async (req, res) => {
     res.statusCode = 500;
   } finally {
     console.log("SEND Header :", res.statusCode, JSON.stringify(res.getHeaders(), null, 4));
-    res.send();
+    if (!stream) {
+      res.send();
+    }
   }
 
 });
