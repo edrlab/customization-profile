@@ -6,7 +6,8 @@
   "scripts": {
     "schema": "node scripts/generate-profile-schema.js",
     "build": "tsc",
-    "cli": "node dist/index.js"
+    "cli": "node dist/index.js",
+    "start": "echo \"download the .env file from bitwarden or notion and execute: bash run.sh INPUT OUTPUT\""
   },
   "keywords": [],
   "author": "",

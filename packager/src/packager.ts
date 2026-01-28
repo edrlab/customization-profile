@@ -29,22 +29,28 @@ const debug = debug_("readium-desktop:main#customization/packager");
 
 const signManifest = (manifest: IProfileManifest) => {
 
-    if (!process.env.PUB_KEY) {
+    if (typeof (process.env.PUB_KEY || process.env.PUBLIC_KEY) !== "string" || !(process.env.PUB_KEY || process.env.PRIVATE_KEY)) {
         throw new Error("PUB_KEY not found!");
     }
-    if (!process.env.PRIVATE_KEY) {
+    if (typeof process.env.PRIVATE_KEY !== "string" || !process.env.PRIVATE_KEY) {
         throw new Error("PRIVATE_KEY not found!");
     }
+
+    const pubKey = (process.env.PUB_KEY || process.env.PUBLIC_KEY)!.replace(/\\n/g, '\n');
+    const privateKey = process.env.PRIVATE_KEY!.replace(/\\n/g, '\n');
+
+    // console.log("PUBLIC_KEY", pubKey);
+    // console.log("PRIVATE_KEY", privateKey);
 
     const manifestStringified = JSON.stringify(manifest);
 
     const sign = createSign("SHA256");
     sign.update(manifestStringified);
     sign.end();
-    const signature = sign.sign(process.env.PRIVATE_KEY, "hex");
+    const signature = sign.sign(privateKey, "hex");
 
     return {
-        key: process.env.PUB_KEY, // PUBLIC Not PRIVATE !?!
+        key: pubKey, // PUBLIC Not PRIVATE !?!
         value: signature,
         algorithm: "https://www.w3.org/2008/xmlsec/namespaces.html#ECKeyValue", // see scripts/profile-generate-key-pair.js
     };
