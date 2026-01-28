@@ -1,0 +1,19 @@
+FROM node:24
+ENV PORT=3000
+WORKDIR /app
+COPY src src/
+COPY package.json .
+COPY package-lock.json .
+COPY tsconfig.json .
+COPY third-party third-party/
+COPY scripts scripts/
+COPY entrypoint.sh /entrypoint.sh
+COPY eslint.config.mjs .
+
+RUN set -xe; \
+which git && echo OK || echo KO; \
+npm install && npm run lint && npm run build:container;\
+chmod +x /entrypoint.sh; 
+
+EXPOSE ${PORT}
+CMD ["/entrypoint.sh", "node", "dist/index.js"]
