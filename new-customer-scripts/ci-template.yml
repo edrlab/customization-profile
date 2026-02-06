@@ -54,25 +54,35 @@ jobs:
         repository: edrlab/customization-profile
         path: customization-profile-meta-repo
         ref: 39a26ef6c516a8adc3523e339d1b3ad07a4ea42c
-    - run:  |-
-        set -x
-        ls -la profile
-        ls -la customization-profile-meta-repo
-        mkdir release
-        cd customization-profile-meta-repo && git status
     - uses: actions/setup-node@v4
       with:
         node-version: '22'
-    - run: node --version && npm --version
-    - run: npm --global install npm@^11
-    - run: npm --version
-    - run: npm cache clean --force
-    - run: npm cache verify
-    - run: cd customization-profile-meta-repo/packager && npm ci --foreground-scripts
-    - run: 'PUB_KEY=${{ secrets.{{__MODE__UPER__}}_PUBLIC_KEY }} PRIVATE_KEY=${{ secrets.{{__MODE__UPER__}}_PRIVATE_KEY }} cd customization-profile-meta-repo/packager && npm run build && npm run cli -- --signed=true ../../profile ../../release'
-    # - run: 'PUB_KEY=${{ secrets.PROD_PUBLIC_KEY }} PRIVATE_KEY=${{ secrets.PROD_PRIVATE_KEY }} cd customization-profile-meta-repo/packager && npm run build && npm run cli -- --signed=true ../../profile ../../release'
-    - run: ls -la release
-    - name: save release name
+    - name: build package
+      run: |-
+        set -xe
+        PWD_=$PWD
+
+        ls -la profile
+        ls -la customization-profile-meta-repo
+        ls -la customization-profile-meta-repo/packager
+
+        mkdir release
+
+        node --version && npm --version
+        npm --global install npm@^11
+        npm --version
+        npm cache clean --force
+        npm cache verify
+
+        cd customization-profile-meta-repo/packager
+
+        npm ci --foreground-scripts
+        npm run build
+
+        PUB_KEY="${{ secrets.{{__MODE__UPER__}}_PUBLIC_KEY }}" PRIVATE_KEY="${{ secrets.{{__MODE__UPER__}}_PRIVATE_KEY }}" npm run cli -- --signed=true $PWD_/profile $PWD_/release
+
+        cd $PWD_
+        ls -la release
       id: release-name
       run: |-
           set -x

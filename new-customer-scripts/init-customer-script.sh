@@ -1,9 +1,9 @@
 #!/bin/sh
 
 _GROUP_NAME="edrlab"
-_PROFILE_NAME="test"
+_PROFILE_NAME="sample1"
 _PROFILE_MODE="dev"
-_USERNAME="test2" # the username must not be used by an another profile
+_USERNAME="edrlab-sample1" # the username must not be used by an another profile
 _PASSWORD="edrlab"
 _GIT_CUSTOMIZATION_PROFILE_DATA_REPO="https://github.com/edrlab/customization-profile-data.git"
 _GIT_PATH="/tmp/git-customization-profile-data-repo"
