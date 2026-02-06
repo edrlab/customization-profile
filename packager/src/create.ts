@@ -45,7 +45,7 @@ export async function createZip(
         // https://github.com/thejoshwolfe/yazl/blob/20584c378c654fc5b5ad141697ec539d7cb27c9e/index.js#L13
         if ((zipfile as unknown as EventEmitter).on)
         (zipfile as unknown as EventEmitter).on("error", (err) => {
-            debug("createWebpubZip zipfile ERROR", packagePath, err);
+            console.error("createWebpubZip zipfile ERROR", packagePath, err);
 
             // reject(err);
         });

@@ -1,0 +1,88 @@
+{
+    "version": 1,
+    "identifier": "https://github.com/edrlab/customization-profile/tree/develop/example/sample1",
+    "created": "2026-01-28T14:48:27.232Z",
+    "modified": "2026-01-28T14:48:27.232Z",
+    "title": "customization-profile-sample-3",
+    "description": "minimal profile manifest",
+    "theme": {
+        "color": {
+            "dark": {
+                "neutral": "#1C1C1C",
+                "primary": "#FF8C1A",
+                "secondary": "#483a3a",
+                "border": "#FF7A00",
+                "background": "#121212",
+                "appName": "#E0E0E0",
+                "scrollbarThumb": "#000000",
+                "buttonsBorder": "#FF8C1A"
+            },
+            "light": {
+                "neutral": "#FFFFFF",
+                "primary": "#121212",
+                "secondary": "#fff8f2",
+                "border": "#E16100",
+                "background": "#e6e8e6",
+                "appName": "#C9C5C9",
+                "scrollbarThumb": "#000000",
+                "buttonsBorder": "#E77500"
+            }
+        }
+    },
+    "images": [],
+    "links": [
+        {
+            "rel": "screen",
+            "href": "./html/faq-en.html",
+            "type": "text/html",
+            "language": "en",
+            "title": "FAQ"
+        },
+        {
+            "rel": "screen",
+            "href": "./html/help-en.html",
+            "type": "text/html",
+            "language": "en",
+            "title": "Help"
+        },
+        {
+            "rel": "screen",
+            "href": "./html/faq-fr.html",
+            "type": "text/html",
+            "language": "fr",
+            "title": "FAQ"
+        },
+        {
+            "rel": "screen",
+            "href": "./html/help-fr.html",
+            "type": "text/html",
+            "language": "fr",
+            "title": "Help"
+        },
+        {
+            "rel": "welcome-screen",
+            "href": "./html/welcome-en.html",
+            "type": "text/html",
+            "language": "en"
+        },
+        {
+            "rel": "welcome-screen",
+            "href": "./html/welcome-fr.html",
+            "type": "text/html",
+            "language": "fr"
+        },
+        {
+            "rel": "catalog",
+            "href": "https://demoreader.cantookstation.com/v1/home.opds2",
+            "title": {
+                "en": "DemoReader catalog"
+            },
+            "properties": {
+                "authenticate": {
+                    "type": "application/opds-authentication+json",
+                    "href": "https://demoreader.cantookstation.com/v1/sign_in.opds2"
+                }
+            }
+        }
+    ]
+}
